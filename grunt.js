@@ -14,9 +14,12 @@ module.exports = function (grunt) {
     },
     files: [
       'js/jquery-1.7.2.min.js',
+       // 'js/jquery.blockUI.min.js',
+       // 'js/spin.min.js',
       'js/jquery.ba-dotimeout.min.js',
       'js/jquery.easing.1.3.js',
       'js/jquery.scrollTo-1.4.2-min.js',
+      // 'js/jquery.text-overflow.js',
       'js/bootstrap/bootstrap.min.js',
       'js/inout.js'
     ],
@@ -131,7 +134,8 @@ module.exports = function (grunt) {
       },
       globals: {
         'Modernizr': true,
-        'google': true
+        'google': true,
+        'Spinner': true
       }
     },
     replacer: {},

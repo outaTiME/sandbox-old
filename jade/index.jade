@@ -16,7 +16,11 @@ block content
                   #1.tab-pane.active
                     section#place_locator
                       .page-header
-                        h1 <i class="icon-search"></i> Place locator
+
+                        div
+                          h1
+                            i.icon-search
+                            span Place locator
 
                       .alert.alert-info
                         strong Heads up!&nbsp;
@@ -31,15 +35,20 @@ block content
                     section#view
                       .page-header.clearfix
 
-                        h1(style="display: block; float: left;") <i class="icon-plus"></i> Lookup
-                        button#btn-back.btn.btn-small(type="button", style="display: block; float: right;") « Volver
+                        div(style="display: block; float: left;")
+                          h1
+                            i.icon-map-marker
+                            span
+
+                        div(style="display: block; float: right;")
+                          button#btn-back.btn.btn-small(type="button") « Volver
 
                       //
                         .alert.alert-error
                           strong Oh snap!&nbsp;
                           | Test feature is coming soon, you're not looking too good. Nulla vitae elit libero, a pharetra augue. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
 
-                      div(style="margin-left: 2px;")
+                      div(style="margin-left: 4px;")
                         #map
 
                   #2.tab-pane
@@ -49,8 +58,15 @@ block content
                       section#update
                         .page-header.clearfix
 
-                          h1(style="display: block; float: left;") <i class="icon-eye-open"></i> Area
-                          button#btn-save.btn.btn-small.btn-primary(type="button", style="display: block; float: right;", disabled) Salvar
+                          div(style="display: block; float: left;")
+                            h1
+                              i.icon-eye-open
+                              span Area
 
-                        div(style="margin-left: 2px;")
+                          div(style="display: block; float: right;")
+                            button#btn-save.btn.btn-small.btn-primary(type="button") Salvar
+
+                        div(style="margin-left: 4px;")
                           #map-bounds
+
+              .overlay

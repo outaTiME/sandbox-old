@@ -18,12 +18,38 @@ $(function () {
     },
     map_bounds_size = false;
 
+  /** Spinner **/
+
+  $.fn.spin = function (opts) {
+    this.each(function () {
+      var $this = $(this),
+          data = $this.data();
+
+      if (data.spinner) {
+        data.spinner.stop();
+        delete data.spinner;
+      }
+      if (opts !== false) {
+        data.spinner = new Spinner($.extend({color: $this.css('color')}, opts)).spin(this);
+      }
+    });
+    return this;
+  };
+
   /** Layout **/
 
-  var a = $(window);
+  var a = $(window), c = $("#box");
+
+  function block() {
+    $('#home #box .overlay').show();
+  }
+
+  function unblock() {
+    $('#home #box .overlay').hide();
+  }
 
   if (!Modernizr.flexbox && !Modernizr['flexbox-legacy']) {
-    var c = $("#box"), d = c.closest(".container");
+    var d = c.closest(".container");
     c.bind("center", function () {
       var e = a.height() - d.height(), f = Math.floor(e / 2);
       if (f > 0) {
@@ -37,9 +63,22 @@ $(function () {
     });
   }
 
+  function checkLocationSize(section) {
+    var location_span = $('section#' + section + ' .page-header h1 span');
+    var width = $('section#' + section + ' div.page-header').outerWidth() -
+      $('section#' + section + ' div.page-header i').outerWidth() -
+      $('section#' + section + ' div.page-header button').outerWidth() -
+      9 - // icon margin
+      18;
+    location_span.width(width);
+  }
+
+  checkLocationSize('view');
+
   a.resize(function () {
     $.doTimeout('resize', 250, function () {
       // map size changed ??
+      checkLocationSize('view');
     });
   });
 
@@ -49,28 +88,34 @@ $(function () {
     $("#view .page-header").outerHeight() - 18 -
     // $("#view .alert").outerHeight() - 18 -
     // $("#view #btn-back").outerHeight() - 18 -
-    2
+    4
   );
-
-  // select first form element
-  $("form :input:visible:enabled:first").select().focus();
 
   /** Page events. **/
 
-  var marker, bounds = new google.maps.LatLngBounds(), map, map_bounds, shared_polygon;
+  var marker, bounds = new google.maps.LatLngBounds(), map, map_bounds, shared_polygon, triangleCoords = [];
+
+  /** Attach inout classes to elem. **/
+  function inoutClass(elem, inside) {
+    // remove clases (if applied)
+    elem.removeClass('in');
+    elem.removeClass('out');
+    // attach new clases
+    if (inside === true) {
+      elem.addClass('in');
+    } else {
+      elem.addClass('out');
+    }
+  }
 
   $("#home form").submit(function (e) {
     // console.debug('Home form submit event...');
     e.preventDefault();
+    block();
     var area = $("form .area"), button = $("form button"), keywords = $("#search #keywords");
-    // prevent iPhone issue
-    area.css({height: button.outerHeight()});
-    button.hide();
-    keywords.attr("readonly", true);
-
     $.ajax({
-      type: "POST",
-      url: '/search',
+      type: "GET",
+      url: '/address',
       // dataType: "json",
       data: {
         keywords: keywords.val(),
@@ -84,7 +129,8 @@ $(function () {
         data = $.parseJSON(data);
         console.info('Yay, data: %o', data);
         if (data.results.length > 0) {
-          var coords = data.results[0].geometry.location, pos = new google.maps.LatLng(coords.lat, coords.lng);
+          var coords = data.results[0].geometry.location, pos = new google.maps.LatLng(coords.lat, coords.lng),
+            title_elem = $("section#view h1 span"), map_elem = $("section#view #map");
           if (marker) {
             marker.setPosition(pos);
           } else {
@@ -94,8 +140,26 @@ $(function () {
               clickable: false
             });
           }
-          map.setCenter(pos);
-          map.setZoom(16);
+          // update title
+          title_elem.text(data.results[0].formatted_address);
+          // title_elem.textOverflow();
+          var contains = bounds.contains(pos);
+          // attach classes
+          inoutClass(title_elem, contains);
+          inoutClass(map_elem, contains);
+          // bounds management
+          if (contains) {
+            // green
+            map.setCenter(pos);
+            map.setZoom(16);
+          } else {
+            // red
+            var bounds_ext = new google.maps.LatLngBounds(bounds.getSouthWest(), bounds.getNorthEast());
+            bounds_ext.extend(pos);
+            map.fitBounds(bounds_ext);
+            console.info('Away for: %i mts.',
+              google.maps.geometry.spherical.computeDistanceBetween(bounds.getCenter(), pos));
+          }
           // go to map ...
           scrollHelper("#view", function () {
             // pass
@@ -103,8 +167,7 @@ $(function () {
         }
       },
       complete: function (jqXHR, textStatus) {
-        button.show();
-        keywords.attr("readonly", false).focus();
+        unblock();
       }
     });
 
@@ -114,8 +177,44 @@ $(function () {
     var area = $("form .area"), button = $("form button"), keywords = $("#search #keywords");
     // console.debug('Cancel button click event fired...');
     scrollHelper("#place_locator", function () {
-      button.show();
-      keywords.attr("readonly", false).focus();
+      $("form :input:visible:enabled:first").select().focus();
+    });
+  });
+
+  $("body").on("click", "#btn-save", function (event) {
+
+    block(); // loading
+
+    // get points
+    var save_points = [], path = shared_polygon.getPath();
+
+    for (var j = 0; j < path.getLength(); j++) {
+      var point = path.getAt(j);
+      save_points.push({
+        lat: point.lat(),
+        lng: point.lng()
+      });
+    }
+
+    $.ajax({
+      type: "POST",
+      url: '/bounds',
+      dataType: "json",
+      data: {
+        // username: 'user@mail.com',
+        bounds: [{ // only one bounds
+          points: save_points
+        }]
+      },
+      error: function (xhr, status) {
+        console.error(status);
+      },
+      success: function (data, textStatus, jqXHR) {
+        console.info('Bounds saved!', data);
+      },
+      complete: function (jqXHR, textStatus) {
+        setTimeout(unblock, 1000);
+      }
     });
   });
 
@@ -127,7 +226,7 @@ $(function () {
         $("#map-bounds").height(
           $("#2").outerHeight() -
           $("#2 .page-header").outerHeight() - 18 -
-          2
+          4
         );
         map_bounds_size = true;
         // initialize map
@@ -137,25 +236,70 @@ $(function () {
     } else {
       google.maps.event.trigger(map, 'resize');
       scrollHelper("#place_locator", function () {
-        button.show();
-        keywords.attr("readonly", false).focus();
+        $("form :input:visible:enabled:first").select().focus();
       });
     }
   });
 
-  // default coords
-  var triangleCoords = [
-    new google.maps.LatLng(-43.26519102639606, -65.38240830126955),
-    new google.maps.LatLng(-43.29753940849775, -65.28676429003906),
-    new google.maps.LatLng(-43.26099753659681, -65.23561389794924),
-    new google.maps.LatLng(-43.21983026907506, -65.29466776074219),
-    new google.maps.LatLng(-43.237691354803474, -65.32419586669914),
-    new google.maps.LatLng(-43.246938002453014, -65.38343826953127)
-  ];
+  (function () {
 
-  for (var i = 0; i < triangleCoords.length; i++) {
-    bounds.extend(triangleCoords[i]);
-  }
+    // ajax call
+    $.ajax({
+      type: "GET",
+      url: '/bounds',
+      dataType: "json",
+      data: {
+        // username: 'user@mail.com'
+      },
+      error: function (xhr, status) {
+        console.error(status);
+      },
+      success: function (data, textStatus, jqXHR) {
+        var d_bounds = data.bounds;
+        if (d_bounds.length > 0) {
+          var d_points = d_bounds[0].points;
+          if (d_points.length > 0) {
+            for (var i = 0; i < d_points.length; i++) {
+              var d_point = d_points[i], latlng = new google.maps.LatLng(d_point.lat, d_point.lng);
+              triangleCoords.push(latlng);
+              bounds.extend(latlng);
+            }
+            /** Initialize main map. */
+            (function () {
+              map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 16,
+                center: bounds.getCenter(),
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                disableDefaultUI: true,
+                zoomControl: true,
+                minZoom: 4
+              });
+              // map.fitBounds(bounds);
+              shared_polygon = new google.maps.Polygon({
+                paths: triangleCoords,
+                strokeColor: "#0000FF",
+                strokeOpacity: 0.6,
+                strokeWeight: 2,
+                fillColor: "#0000FF",
+                fillOpacity: 0.15,
+                clickable: false
+              });
+              shared_polygon.setMap(map);
+              console.info('Bounds loaded, %o', d_points);
+            }());
+          }
+        }
+      },
+      complete: function (jqXHR, textStatus) {
+        setTimeout(function () {
+          unblock();
+        // select first form element
+          $("form :input:visible:enabled:first").select().focus();
+        }, 1000);
+      }
+    });
+  }());
+
 
   function updateBounds(path) {
     var clone = [];
@@ -169,35 +313,6 @@ $(function () {
     // update path in shared
     shared_polygon.setPath(clone);
   }
-
-  /** Initialize main map. */
-
-  (function () {
-
-    map = new google.maps.Map(document.getElementById('map'), {
-      zoom: 16,
-      center: bounds.getCenter(),
-      mapTypeId: google.maps.MapTypeId.ROADMAP,
-      disableDefaultUI: true,
-      zoomControl: true,
-      minZoom: 4
-    });
-
-    // map.fitBounds(bounds);
-
-    shared_polygon = new google.maps.Polygon({
-      paths: triangleCoords,
-      strokeColor: "#0000FF",
-      strokeOpacity: 0.8,
-      strokeWeight: 2,
-      fillColor: "#0000FF",
-      fillOpacity: 0.25,
-      clickable: false
-    });
-
-    shared_polygon.setMap(map);
-
-  }());
 
   /** Initialize bounds map. */
 
