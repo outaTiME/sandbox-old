@@ -1,0 +1,30 @@
+CACHE MANIFEST
+# @@timestamp
+
+CACHE:
+
+/favicon.ico
+/apple-touch-icon.png
+/apple-touch-icon-precomposed.png
+/apple-touch-icon-57x57-precomposed.png
+/apple-touch-icon-72x72-precomposed.png
+/apple-touch-icon-114x114-precomposed.png
+/apple-touch-icon-144x144-precomposed.png
+
+/js/modernizr.custom.11127.js
+/js/inout.min.js
+
+/css/inout.css
+
+/images/avatar.png
+/images/avatar@1.5x.png
+/images/avatar@2x.png
+/images/glyphicons-halflings-white.png
+/images/glyphicons-halflings.png
+/images/groovepaper.png
+/images/note-overlay.png
+
+index.html
+
+NETWORK:
+*

@@ -1,0 +1,17 @@
+##
+# OS generated files
+
+.DS_Store
+Icon?
+node_modules
+attic
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+# Own generated
+public/js/inout.js

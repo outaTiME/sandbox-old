@@ -1,0 +1,57 @@
+
+block content
+  #home.vignette
+    .flex
+      .container
+        .row
+          .span8.offset2
+            #box
+              .tabbable
+                ul.nav.nav-tabs
+                  li.active
+                    a(href="#1", data-toggle="tab") Home
+                  li
+                    a(href="#2", data-toggle="tab") Viewport
+                .tab-content
+                  #1.tab-pane.active
+                    section#place_locator
+                      .page-header
+                        h1 <i class="icon-search"></i> Place locator
+
+                      .alert.alert-info
+                        strong Heads up!&nbsp;
+                        | Best check yo self, you're not looking too good. Nulla vitae elit libero, a pharetra augue. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
+
+                      form#search
+                        div(style="margin-left: 10px;")
+                          input#keywords.input-xxlarge(type="text", placeholder="Search...", value="Don Bosco 136, Trelew")
+                        .area
+                          button.btn.btn-primary.btn-large(type="submit") Search
+
+                    section#view
+                      .page-header.clearfix
+
+                        h1(style="display: block; float: left;") <i class="icon-plus"></i> Lookup
+                        button#btn-back.btn.btn-small(type="button", style="display: block; float: right;") « Volver
+
+                      //
+                        .alert.alert-error
+                          strong Oh snap!&nbsp;
+                          | Test feature is coming soon, you're not looking too good. Nulla vitae elit libero, a pharetra augue. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
+
+                      div(style="margin-left: 2px;")
+                        #map
+
+                  #2.tab-pane
+
+                    div.tab-container
+
+                      section#update
+                        .page-header.clearfix
+
+                          h1(style="display: block; float: left;") <i class="icon-eye-open"></i> Area
+                          //
+                            button#btn-save.btn.btn-small.btn-primary(type="button", style="display: block; float: right;", disabled) Salvar
+
+                        div(style="margin-left: 2px;")
+                          #map-bounds

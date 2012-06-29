@@ -1,0 +1,18 @@
+
+              __     _
+   _    _/__  /./|,//_`
+  /_//_// /_|///  //_, outaTiME
+
+
+/* TEAM */
+  Web Developer / Graphic Designer: Ariel Oscar Falduto
+  Site: http://inout.outa.im
+  Twitter: @outa7iME
+  Contact: afalduto at gmail dot com
+  From: Buenos Aires, Argentina
+
+/* SITE */
+  Last update: @@timestamp
+  Standards: HTML5, CSS3, robotstxt.org, humanstxt.org
+  Components: H5BP, Modernizr, jQuery, Twitter Bootstrap, LESS, Jade, Grunt
+  Software: Sublime Text 2, Photoshop, LiveReload

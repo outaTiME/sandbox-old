@@ -1,0 +1,33 @@
+{
+  "name": "Inout",
+  "version": "0.5.0",
+  "description": "Map geocoding tool that determines if a giving place is in or out of defined bounds.",
+  "homepage": "http://inout.outa.im",
+  "keywords": ["map", "google", "inout", "in", "out", "geocoding"],
+  "author": "outaTiME <afalduto@gmail.com> (http://outa.im)",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/outaTiME/inout.git"
+  },
+  "bugs": {
+    "url": "http://github.com/outaTiME/inout/issues"
+  },
+  "main": "app",
+  "dependencies": {
+    "express": "2.5.9",
+    "jade": "0.x",
+    "gzippo": "0.x",
+    "request": "2.x"
+  },
+  "devDependencies": {
+    "grunt": ">=0.3.9",
+    "grunt-recess": ">=0.1.0",
+    "grunt-contrib": ">=0.0.5",
+    "grunt-growl": ">=0.1.1",
+    "grunt-replace": ">=0.1.0"
+  },
+  "engines": {
+    "node": "0.6.x"
+  },
+  "private": true
+}
