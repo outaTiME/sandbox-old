@@ -109,9 +109,13 @@ $(function () {
   }
 
   $("#home form").submit(function (e) {
+    var found = false;
+    $("form .control-group").removeClass("error");
     // console.debug('Home form submit event...');
     e.preventDefault();
     block();
+    // blur
+    $("form :input:visible:enabled:first").blur();
     var area = $("form .area"), button = $("form button"), keywords = $("#search #keywords");
     $.ajax({
       type: "GET",
@@ -123,13 +127,16 @@ $(function () {
           bounds.getSouthWest().lat() + "," + bounds.getSouthWest().lng()
       },
       error: function (xhr, status) {
-        console.error(status);
+        // console.error(status);
       },
       success: function (data, textStatus, jqXHR) {
         data = $.parseJSON(data);
-        console.info('Yay, data: %o', data);
-        if (data.results.length > 0) {
-          var coords = data.results[0].geometry.location, pos = new google.maps.LatLng(coords.lat, coords.lng),
+        // console.info('Yay, data: %o', data);
+        var results = data.results;
+        for (var i = 0; i < results.length; i++) {
+          var result = results[i], type = result.types[0];
+          // if (type === "street_address" || type === "route") {
+          var coords = result.geometry.location, pos = new google.maps.LatLng(coords.lat, coords.lng),
             title_elem = $("section#view h1 span"), map_elem = $("section#view #map");
           if (marker) {
             marker.setPosition(pos);
@@ -156,14 +163,25 @@ $(function () {
             // red
             var bounds_ext = new google.maps.LatLngBounds(bounds.getSouthWest(), bounds.getNorthEast());
             bounds_ext.extend(pos);
-            map.fitBounds(bounds_ext);
-            console.info('Away for: %i mts.',
-              google.maps.geometry.spherical.computeDistanceBetween(bounds.getCenter(), pos));
+            var distance = google.maps.geometry.spherical.computeDistanceBetween(bounds.getCenter(), pos) / 1000;
+            // console.info('Away for: %i kms.', distance);
+            if (distance > 1500) {
+              map.setCenter(pos);
+              map.setZoom(16);
+            } else {
+              map.fitBounds(bounds_ext);
+            }
           }
           // go to map ...
-          scrollHelper("#view", function () {
-            // pass
-          });
+          scrollHelper("#view");
+          found = true;
+          break;
+          // }
+        }
+        // not found ...
+        if (found === false) {
+          $("form .control-group").addClass("error");
+          $("form :input:visible:enabled:first").select().focus();
         }
       },
       complete: function (jqXHR, textStatus) {
@@ -207,10 +225,10 @@ $(function () {
         }]
       },
       error: function (xhr, status) {
-        console.error(status);
+        // console.error(status);
       },
       success: function (data, textStatus, jqXHR) {
-        console.info('Bounds saved!', data);
+        // console.info('Bounds saved!', data);
       },
       complete: function (jqXHR, textStatus) {
         setTimeout(unblock, 1000);
@@ -252,7 +270,7 @@ $(function () {
         // username: 'user@mail.com'
       },
       error: function (xhr, status) {
-        console.error(status);
+        // console.error(status);
       },
       success: function (data, textStatus, jqXHR) {
         var d_bounds = data.bounds;
@@ -285,7 +303,7 @@ $(function () {
                 clickable: false
               });
               shared_polygon.setMap(map);
-              console.info('Bounds loaded, %o', d_points);
+              // console.info('Bounds loaded, %o', d_points);
             }());
           }
         }
@@ -361,17 +379,17 @@ $(function () {
     polygon.setMap(map_bounds);
 
     google.maps.event.addListener(polygon.getPath(), 'insert_at', function (evt) {
-      console.info('Vertex inserted.');
+      // console.info('Vertex inserted.');
       updateBounds(this);
     });
 
     google.maps.event.addListener(polygon.getPath(), 'remove_at', function (evt) {
-      console.info('Vertex removed.');
+      // console.info('Vertex removed.');
       updateBounds(this);
     });
 
     google.maps.event.addListener(polygon.getPath(), 'set_at', function (evt) {
-      console.info('Vertex moved.');
+      // console.info('Vertex moved.');
       updateBounds(this);
     });
   }

@@ -31,7 +31,7 @@ body {
   opacity: 0.8;
   /* cursor: wait; */
   position: absolute;
-  background-image: url("/images/spinner@x2.gif");
+  background-image: url("/images/spinner.gif");
   background-position: center;
   background-repeat: no-repeat;
   -webkit-border-radius: 4px;
@@ -131,19 +131,19 @@ section#view .page-header h1 span {
 /** Inout styles **/
 
 section#view h1 span.in {
-  color: #00FF00;
+  color: @successText;
 }
 
 section#view h1 span.out {
-  color: #FF0000;
+  color: @errorText;
 }
 
 #map.in {
-  border: 2px solid #00FF00;
+  border: 2px solid @successText;
 }
 
 #map.out  {
-  border: 2px solid #FF0000;
+  border: 2px solid @errorText;
 }
 
 /** Bootstrap **/
@@ -160,9 +160,9 @@ section#view h1 span.out {
   only screen and (-webkit-min-device-pixel-ratio: 1.5),
   only screen and (min-device-pixel-ratio: 1.5) {
 
-  #home #box .tabbable #search .area {
+  #home #box .overlay {
     background-image: url("/images/spinner@x1.5.gif");
-    background-size: 16px 16px;
+    background-size: 32px 32px;
   }
 
 }
@@ -173,9 +173,9 @@ section#view h1 span.out {
   only screen and (-webkit-min-device-pixel-ratio: 2),
   only screen and (min-device-pixel-ratio: 2) {
 
-  #home #box .tabbable #search .area {
+  #home #box .overlay {
     background-image: url("/images/spinner@x2.gif");
-    background-size: 16px 16px;
+    background-size: 32px 32px;
   }
 
 }
@@ -199,8 +199,20 @@ section#view h1 span.out {
   /* -webkit-tap-highlight-color: rgba(0,0,0,0); */
 
   -webkit-user-select: none;
+  -khtml-user-select: none;
   -moz-user-select: none;
+  -o-user-select: none;
   -ms-user-select: none;
+  user-select: none;
+}
+
+.touch input {
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -o-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }
 
 .no-touch ::selection {
