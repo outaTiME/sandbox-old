@@ -167,7 +167,7 @@ $(function () {
             // console.info('Away for: %i kms.', distance);
             if (distance > 1500) {
               map.setCenter(pos);
-              map.setZoom(16);
+              map.setZoom(6);
             } else {
               map.fitBounds(bounds_ext);
             }
