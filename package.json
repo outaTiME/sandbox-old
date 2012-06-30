@@ -1,6 +1,6 @@
 {
   "name": "Inout",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Map geocoding tool that determines if a giving place is in or out of defined bounds.",
   "homepage": "http://inout.outa.im",
   "keywords": ["map", "google", "inout", "in", "out", "geocoding"],

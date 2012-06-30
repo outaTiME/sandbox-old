@@ -1,5 +1,7 @@
 
-$(function () {
+
+/** Main method, will be called from template. **/
+function initialize(data) {
 
   var
 
@@ -17,24 +19,6 @@ $(function () {
       _section = section;
     },
     map_bounds_size = false;
-
-  /** Spinner **/
-
-  $.fn.spin = function (opts) {
-    this.each(function () {
-      var $this = $(this),
-          data = $this.data();
-
-      if (data.spinner) {
-        data.spinner.stop();
-        delete data.spinner;
-      }
-      if (opts !== false) {
-        data.spinner = new Spinner($.extend({color: $this.css('color')}, opts)).spin(this);
-      }
-    });
-    return this;
-  };
 
   /** Layout **/
 
@@ -92,8 +76,20 @@ $(function () {
   );
 
   /** Page events. **/
-
   var marker, bounds = new google.maps.LatLngBounds(), map, map_bounds, shared_polygon, triangleCoords = [];
+
+  /** Parse input data. **/
+  var d_bounds = data;
+  if (d_bounds.length > 0) {
+    var d_points = d_bounds[0].points;
+    if (d_points.length > 0) {
+      for (var i = 0; i < d_points.length; i++) {
+        var d_point = d_points[i], latlng = new google.maps.LatLng(d_point.lat, d_point.lng);
+        triangleCoords.push(latlng);
+        bounds.extend(latlng);
+      }
+    }
+  }
 
   /** Attach inout classes to elem. **/
   function inoutClass(elem, inside) {
@@ -172,21 +168,24 @@ $(function () {
               map.fitBounds(bounds_ext);
             }
           }
+          unblock();
           // go to map ...
           scrollHelper("#view");
+          // mark
           found = true;
           break;
           // }
         }
         // not found ...
         if (found === false) {
+          unblock();
           $("form .control-group").addClass("error");
           $("form :input:visible:enabled:first").select().focus();
         }
-      },
+      } /*,
       complete: function (jqXHR, textStatus) {
         unblock();
-      }
+      } */
     });
 
   });
@@ -260,6 +259,32 @@ $(function () {
   });
 
   (function () {
+    map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 16,
+      center: bounds.getCenter(),
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      disableDefaultUI: true,
+      zoomControl: true,
+      minZoom: 4
+    });
+    // map.fitBounds(bounds);
+    shared_polygon = new google.maps.Polygon({
+      paths: triangleCoords,
+      strokeColor: "#0000FF",
+      strokeOpacity: 0.6,
+      strokeWeight: 2,
+      fillColor: "#0000FF",
+      fillOpacity: 0.15,
+      clickable: false
+    });
+    shared_polygon.setMap(map);
+    // select first form element
+    $("form :input:visible:enabled:first").select().focus();
+  }());
+
+  /*
+
+  (function () {
 
     // ajax call
     $.ajax({
@@ -282,7 +307,6 @@ $(function () {
               triangleCoords.push(latlng);
               bounds.extend(latlng);
             }
-            /** Initialize main map. */
             (function () {
               map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 16,
@@ -318,6 +342,7 @@ $(function () {
     });
   }());
 
+  */
 
   function updateBounds(path) {
     var clone = [];
@@ -394,4 +419,4 @@ $(function () {
     });
   }
 
-});
+}

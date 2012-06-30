@@ -48,13 +48,6 @@ app.configure(function () {
 app.helpers({
 });
 
-// routes
-
-app.get('/', checkAuth, function (req, res) {
-  res.render('index', {
-    debug: app.settings.env === "development"
-  });
-});
 
 // ajax
 
@@ -193,6 +186,31 @@ app.get('/test', checkAuth, function (req, res, next) {
       }
     });
 });
+
+app.get('/', checkAuth, function (req, res, next) {
+
+  // find user id
+  UserModel
+    .findOne({email: req.query.username || 'user@mail.com'}, ['bounds'])
+    .exec(function (err, doc) {
+    if (err) {
+      return next(err);
+    }
+    console.info("Bounds for: %s. %j", req.query.username, doc.bounds);
+    if (doc) {
+      // res.json(doc);
+      res.render('index', {
+        debug: app.settings.env === "development",
+        bounds: JSON.stringify(doc.bounds)
+      });
+
+    } else {
+      res.send(500);
+    }
+  });
+
+});
+
 
 app.get('/bounds', checkAuth, function (req, res, next) {
   // find user id
