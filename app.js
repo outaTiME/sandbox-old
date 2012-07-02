@@ -52,22 +52,7 @@ app.helpers({
 });
 
 
-/** Services. **/
-
-app.get('/address', checkAuth, function (req, res) {
-  var keywords = req.query.keywords, bounds = req.query.bounds, client = require('request');
-  console.info("Searching address: %s (%s)", keywords, bounds);
-  client.get({
-    url: 'http://maps.googleapis.com/maps/api/geocode/json?address=' + encodeURIComponent(keywords) +
-      '&bounds=' + bounds + '&region=ar&language=es&sensor=false',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  }, function (error, response, body) {
-    console.log(body);
-    res.json(body);
-  });
-});
+/** Model **/
 
 // load types
 
@@ -190,6 +175,8 @@ app.get('/test', checkAuth, function (req, res, next) {
     });
 });
 
+/** Services. **/
+
 app.get('/bounds', checkAuth, function (req, res, next) {
   // find user id
   UserModel
@@ -223,6 +210,21 @@ app.post('/bounds', checkAuth, function (req, res, next) {
       }
       res.json(doc);
     });
+  });
+});
+
+app.get('/address', checkAuth, function (req, res) {
+  var keywords = req.query.keywords, bounds = req.query.bounds, client = require('request');
+  console.info("Searching address: %s (%s)", keywords, bounds);
+  client.get({
+    url: 'http://maps.googleapis.com/maps/api/geocode/json?address=' + encodeURIComponent(keywords) +
+      '&bounds=' + bounds + '&region=ar&language=es&sensor=false',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }, function (error, response, body) {
+    console.log(body);
+    res.json(body);
   });
 });
 

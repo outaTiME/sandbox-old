@@ -67,13 +67,6 @@ body {
   margin: 3px 9px 0;
 }
 
-#home #box .tabbable .tab-content section .page-header h1 {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 18px;
-  font-weight: 200;
-  line-height: 25px;
-}
-
 #home #box .tabbable .tab-content section button {
   /* width: 100px; */
 }
@@ -102,16 +95,24 @@ body {
   text-align: center;
 }
 
-section .page-header h1 {
+section .page-header span {
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 18px;
+  font-weight: 200;
+  /* line-height: 25px;  */
   line-height: 28px !important;
 }
 
-section#view .page-header h1 span {
+section .page-header span.ellipsis {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   width: 150px;
-  display: inline-block;
+}
+
+section .page-header i {
+  float: left;
+  margin-top: 7px !important;
 }
 
 /** Map **/
@@ -129,11 +130,11 @@ section#view .page-header h1 span {
 
 /** Inout styles **/
 
-section#view h1 span.in {
+section#view span.in {
   color: @successText;
 }
 
-section#view h1 span.out {
+section#view span.out {
   color: @errorText;
 }
 

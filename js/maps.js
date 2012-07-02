@@ -48,7 +48,7 @@ function initialize(data) {
   }
 
   function checkLocationSize(section) {
-    var location_span = $('section#' + section + ' .page-header h1 span');
+    var location_span = $('section#' + section + ' .page-header span');
     var width = $('section#' + section + ' div.page-header').outerWidth() -
       $('section#' + section + ' div.page-header i').outerWidth() -
       $('section#' + section + ' div.page-header button').outerWidth() -
@@ -133,7 +133,7 @@ function initialize(data) {
           var result = results[i], type = result.types[0];
           // if (type === "street_address" || type === "route") {
           var coords = result.geometry.location, pos = new google.maps.LatLng(coords.lat, coords.lng),
-            title_elem = $("section#view h1 span"), map_elem = $("section#view #map");
+            title_elem = $("section#view span"), map_elem = $("section#view #map");
           if (marker) {
             marker.setPosition(pos);
           } else {
