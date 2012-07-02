@@ -20,7 +20,7 @@ var
   mongooseTypes = require("mongoose-types"),
 
   /** Yay, out application name. */
-  app_name = "Inout",
+  app_name = "Sandbox",
 
   /** Check auth method, used in each express request. */
   checkAuth = function (req, res, next) {
@@ -35,6 +35,9 @@ var
 app.configure(function () {
   app.set('views', __dirname + '/jade');
   app.set('view engine', 'jade');
+  app.set('view options', {
+    layout: false
+  });
   app.use(express.cookieParser());
   app.use(express.session({ secret: 'foobar' }));
   app.use(express.bodyParser());
@@ -49,7 +52,7 @@ app.helpers({
 });
 
 
-// ajax
+/** Services. **/
 
 app.get('/address', checkAuth, function (req, res) {
   var keywords = req.query.keywords, bounds = req.query.bounds, client = require('request');
@@ -76,7 +79,7 @@ var
 
 // database
 
-mongoose.connect(process.env.MONGOHQ_URL || 'mongodb://localhost/inout');
+mongoose.connect(process.env.MONGOHQ_URL || 'mongodb://localhost/sandbox');
 
 var Schema = mongoose.Schema; //Schema.ObjectId
 
@@ -187,31 +190,6 @@ app.get('/test', checkAuth, function (req, res, next) {
     });
 });
 
-app.get('/', checkAuth, function (req, res, next) {
-
-  // find user id
-  UserModel
-    .findOne({email: req.query.username || 'user@mail.com'}, ['bounds'])
-    .exec(function (err, doc) {
-    if (err) {
-      return next(err);
-    }
-    console.info("Bounds for: %s. %j", req.query.username, doc.bounds);
-    if (doc) {
-      // res.json(doc);
-      res.render('index', {
-        debug: app.settings.env === "development",
-        bounds: JSON.stringify(doc.bounds)
-      });
-
-    } else {
-      res.send(500);
-    }
-  });
-
-});
-
-
 app.get('/bounds', checkAuth, function (req, res, next) {
   // find user id
   UserModel
@@ -246,6 +224,38 @@ app.post('/bounds', checkAuth, function (req, res, next) {
       res.json(doc);
     });
   });
+});
+
+/** Pages. **/
+
+app.get('/', checkAuth, function (req, res, next) {
+  res.render('index', {
+    debug: app.settings.env === "development"
+  });
+});
+
+app.get('/maps', checkAuth, function (req, res, next) {
+
+  // find user id
+  UserModel
+    .findOne({email: req.query.username || 'user@mail.com'}, ['bounds'])
+    .exec(function (err, doc) {
+    if (err) {
+      return next(err);
+    }
+    console.info("Bounds for: %s. %j", req.query.username, doc.bounds);
+    if (doc) {
+      // res.json(doc);
+      res.render('maps', {
+        debug: app.settings.env === "development",
+        bounds: JSON.stringify(doc.bounds)
+      });
+
+    } else {
+      res.send(500);
+    }
+  });
+
 });
 
 // environment specific

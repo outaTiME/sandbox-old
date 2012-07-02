@@ -1,16 +1,16 @@
 {
-  "name": "Inout",
-  "version": "0.7.0",
-  "description": "Map geocoding tool that determines if a giving place is in or out of defined bounds.",
-  "homepage": "http://inout.outa.im",
-  "keywords": ["map", "google", "inout", "in", "out", "geocoding"],
+  "name": "Sandbox",
+  "version": "0.8.0",
+  "description": "Sandbox project used for test purposes.",
+  "homepage": "http://sandbox.outa.im",
+  "keywords": ["sandbox", "outa", "outaTiME", "Ariel Falduto"],
   "author": "outaTiME <afalduto@gmail.com> (http://outa.im)",
   "repository": {
     "type": "git",
-    "url": "http://github.com/outaTiME/inout.git"
+    "url": "http://github.com/outaTiME/sandbox.git"
   },
   "bugs": {
-    "url": "http://github.com/outaTiME/inout/issues"
+    "url": "http://github.com/outaTiME/sandbox/issues"
   },
   "main": "app",
   "dependencies": {

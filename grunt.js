@@ -12,36 +12,65 @@ module.exports = function (grunt) {
         '* Copyright (c) <%= grunt.template.today("yyyy") %> outaTiME, Inc.\n' +
         '*/'
     },
-    files: [
-      'js/jquery-1.7.2.min.js',
-       // 'js/jquery.blockUI.min.js',
-       // 'js/spin.min.js',
-      'js/jquery.ba-dotimeout.min.js',
-      'js/jquery.easing.1.3.js',
-      'js/jquery.scrollTo-1.4.2-min.js',
-      // 'js/jquery.text-overflow.js',
-      'js/bootstrap/bootstrap.min.js',
-      'js/inout.js'
-    ],
+    files: {
+      sandbox: [
+        'js/jquery-1.7.2.min.js',
+        'js/bootstrap/bootstrap.min.js',
+        'js/sandbox.js'
+      ],
+
+      // modules
+      maps: [
+        'js/jquery.ba-dotimeout.min.js',
+        'js/jquery.easing.1.3.js',
+        'js/jquery.scrollTo-1.4.2-min.js',
+        'js/maps.js'
+      ]
+    },
     lint: {
-      files: ['grunt.js', 'app.js', 'js/inout.js']
+      sandbox: ['grunt.js', 'app.js', 'js/sandbox.js'],
+
+      // modules
+      maps: ['js/maps.js']
     },
     concat: {
-      dist: {
-        src: ['<config:files>'],
-        dest: 'public/js/inout.js'
+      sandbox: {
+        src: ['<config:files.sandbox>'],
+        dest: 'public/js/sandbox.js'
+      },
+
+      // modules
+      maps: {
+        src: ['<config:files.maps>'],
+        dest: 'public/js/maps.js'
       }
     },
     min: {
-      dist: {
-        src: ['<banner:meta.banner>', '<config:files>'],
-        dest: 'public/js/inout.min.js'
+      sandbox: {
+        src: ['<banner:meta.banner>', '<config:files.sandbox>'],
+        dest: 'public/js/sandbox.min.js'
+      },
+
+      // modules
+      maps: {
+        src: ['<banner:meta.banner>', '<config:files.maps>'],
+        dest: 'public/js/maps.min.js'
       }
     },
     recess: {
-      dist: {
-        src: ['less/inout.less'],
-        dest: 'public/css/inout.css',
+      sandbox: {
+        src: ['less/sandbox.less'],
+        dest: 'public/css/sandbox.css',
+        options: {
+          compile: true,
+          compress: true
+        }
+      },
+
+      // modules
+      maps: {
+        src: ['less/maps.less'],
+        dest: 'public/css/maps.css',
         options: {
           compile: true,
           compress: true
@@ -60,12 +89,18 @@ module.exports = function (grunt) {
     },
     watch: {
       recess: {
-        files: ['<config:recess.dist.src>'],
-        tasks: 'recess replace growl:rebuild'
+        files: [
+          '<config:recess.sandbox.src>',
+          '<config:recess.maps.src>'
+        ],
+        tasks: 'recess growl:rebuild'
       },
       js: {
-        files: ['app.js', '<config:files>'],
-        tasks: 'lint concat replace growl:rebuild'
+        files: [
+          '<config:files.sandbox>',
+          '<config:files.maps>'
+        ],
+        tasks: 'lint concat growl:rebuild'
       }
     },
     jshint: {
@@ -143,17 +178,17 @@ module.exports = function (grunt) {
     growl: {
       dev: {
         message: 'Development build done!',
-        title: 'Inout',
+        title: 'Sandbox',
         image: 'public/apple-touch-icon.png'
       },
       dist: {
         message: 'Distribution build done!',
-        title: 'Inout',
+        title: 'Sandbox',
         image: 'public/apple-touch-icon.png'
       },
       rebuild: {
         message: 'Rebuild done!',
-        title: 'Inout',
+        title: 'Sandbox',
         image: 'public/apple-touch-icon.png'
       }
     }

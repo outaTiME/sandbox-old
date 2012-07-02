@@ -14,4 +14,5 @@ attic
 .Trashes
 
 # Own generated
-public/js/inout.js
+public/js/sandbox.js
+public/js/maps.js
