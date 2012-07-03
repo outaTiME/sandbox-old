@@ -114,6 +114,7 @@ var Log = new Schema({
     type: ObjectId,
     ref: 'User'
   },
+  module: String,
   verb: {
     type: String,
     required: true,
@@ -204,16 +205,15 @@ app.get('/maps/reset', checkAuth, function (req, res, next) {
     });
 });
 
-function _log(user, verb, action, value) {
+function _log(user, module, verb, action, value) {
   // create log
   new LogModel({
     _user: user._id,
+    module: module,
     verb: verb,
     action: action,
     value: value
-  }).save(function (err) {
-    // pass
-  }); // send and forget
+  }).save(); // send and forget
 }
 
 /** Services. **/
@@ -249,7 +249,7 @@ app.post('/maps/bounds', checkAuth, function (req, res, next) {
       if (err1) {
         return next(err1);
       }
-      _log(doc, 'POST', 'bounds');
+      _log(doc, 'maps', 'POST', 'bounds');
       res.json(doc);
     });
   });
@@ -277,7 +277,7 @@ app.get('/maps/address', checkAuth, function (req, res, next) {
         if (err1) {
           return next(err1);
         }
-        _log(doc, 'GET', 'address', {keywords: keywords});
+        _log(doc, 'maps', 'GET', 'address', {keywords: keywords});
         // send response
         res.json(JSON.parse(body));
       });
@@ -319,7 +319,7 @@ app.get('/maps', checkAuth, function (req, res, next) {
 
 });
 
-app.get('/maps/log', checkAuth, function (req, res, next) {
+app.get('/logs', checkAuth, function (req, res, next) {
   // find user id
   LogModel
     .find({})
