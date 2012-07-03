@@ -115,7 +115,7 @@ function initialize(data) {
     var area = $("form .area"), button = $("form button"), keywords = $("#search #keywords");
     $.ajax({
       type: "GET",
-      url: '/address',
+      url: '/maps/address',
       // dataType: "json",
       data: {
         keywords: keywords.val(),
@@ -126,7 +126,6 @@ function initialize(data) {
         // console.error(status);
       },
       success: function (data, textStatus, jqXHR) {
-        data = $.parseJSON(data);
         // console.info('Yay, data: %o', data);
         var results = data.results;
         for (var i = 0; i < results.length; i++) {
@@ -215,7 +214,7 @@ function initialize(data) {
 
     $.ajax({
       type: "POST",
-      url: '/bounds',
+      url: '/maps/bounds',
       dataType: "json",
       data: {
         // username: 'user@mail.com',
@@ -289,7 +288,7 @@ function initialize(data) {
     // ajax call
     $.ajax({
       type: "GET",
-      url: '/bounds',
+      url: '/maps/bounds',
       dataType: "json",
       data: {
         // username: 'user@mail.com'

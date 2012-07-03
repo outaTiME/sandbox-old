@@ -3,3 +3,263 @@
 
 @import "bootstrap/responsive.less";
 
+body {
+  background: url("/images/groovepaper.png") center top repeat;
+}
+
+#home #box {
+  padding: 18px;
+  background: #fff;
+  text-align: center;
+  border: 1px solid #ddd;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  position: relative;
+}
+
+#home #box .wrapper {
+  height: 454px;
+}
+
+#home #box .overlay {
+  z-index: 2000;
+  border: none;
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  background-color: rgb(255, 255, 255);
+  opacity: 0.8;
+  /* cursor: wait; */
+  position: absolute;
+  background-image: url("/images/spinner.gif");
+  background-position: center;
+  background-repeat: no-repeat;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  display: none;
+}
+
+#home #box .alert {
+  padding: 8px 14px;
+}
+
+#warning-browser {
+  display: none;
+}
+
+#warning-browser.alert {
+  padding: 8px 14px;
+  text-align: center;
+}
+
+/** Bootstrap **/
+
+.tab-pane {
+  height: 400px;
+  overflow: hidden;
+  /* margin-top: 18px; */
+}
+
+/* Pixel ratio of 1.5. Background-size is 1/1.5 = 66.67% (of a 150px image) */
+/* only screen and (-o-min-device-pixel-ratio: 3/2), */
+@media only screen and (-moz-min-device-pixel-ratio: 1.5),
+  only screen and (-webkit-min-device-pixel-ratio: 1.5),
+  only screen and (min-device-pixel-ratio: 1.5) {
+
+  #home #box .overlay {
+    background-image: url("/images/spinner@x1.5.gif");
+    background-size: 32px 32px;
+  }
+
+}
+
+/* Pixel ratio of 2. Background-size is 1/2 = 50% (of a 200px image) */
+/* only screen and (-o-min-device-pixel-ratio: 2/1), */
+@media only screen and (-moz-min-device-pixel-ratio: 2),
+  only screen and (-webkit-min-device-pixel-ratio: 2),
+  only screen and (min-device-pixel-ratio: 2) {
+
+  #home #box .overlay {
+    background-image: url("/images/spinner@x2.gif");
+    background-size: 32px 32px;
+  }
+
+}
+
+/** Modernizr **/
+
+/* .no-flexbox #warning-browser, */
+.no-cssanimations #warning-browser,
+.no-cssgradients #warning-browser,
+.no-csstransforms #warning-browser,
+.no-borderradius #warning-browser,
+.no-boxshadow #warning-browser,
+.no-fontface #warning-browser {
+  display: block;
+}
+
+.touch * {
+  -webkit-touch-callout: none;
+  -webkit-text-size-adjust: none;
+
+  /* -webkit-tap-highlight-color: rgba(0,0,0,0); */
+
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.touch input {
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -o-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+.no-touch ::selection {
+  color: #fff;
+  background: #f676b2;
+}
+
+.no-touch ::-moz-selection {
+  color: #fff;
+  background: #f676b2;
+}
+
+.flexbox #home .flex,
+.flexbox-legacy #home .flex {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-box;
+  display: -ms-flexbox;
+  display: box;
+
+  -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  -ms-box-orient: vertical;
+  box-orient: vertical;
+
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  -ms-box-align: center;
+  -ms-flex-align: center;
+  box-align: center;
+
+  -webkit-box-pack: center;
+  -moz-box-pack: center;
+  -ms-box-pack: center;
+  box-pack: center;
+
+  width: 100%;
+  height: 100%;
+  vertical-align: top;
+}
+
+/** Experiments **/
+
+.vignette {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-image: -webkit-radial-gradient(50% 50%, rgba(255, 255, 255, 0), rgba(0, 0, 0, 0.2));
+  background-image:    -moz-radial-gradient(50% 50%, rgba(255, 255, 255, 0), rgba(0, 0, 0, 0.2));
+  background-image:     -ms-radial-gradient(50% 50%, rgba(255, 255, 255, 0), rgba(0, 0, 0, 0.2));
+  background-image:      -o-radial-gradient(50% 50%, rgba(255, 255, 255, 0), rgba(0, 0, 0, 0.2));
+}
+
+.boxshadow .effect3 {
+  position: relative;
+}
+
+.boxshadow .effect3:before,
+.boxshadow .effect3:after {
+  z-index: -1;
+  position: absolute;
+  content: "";
+  bottom: 15px;
+  left: 10px;
+  width: 50%;
+  top: 90%;
+  max-width: 300px;
+  background: #777;
+  -webkit-box-shadow: 0 15px 10px #777;
+  -moz-box-shadow: 0 15px 10px #777;
+  box-shadow: 0 15px 10px #777;
+  -webkit-transform: rotate(-3deg);
+  -moz-transform: rotate(-3deg);
+  -o-transform: rotate(-3deg);
+  -ms-transform: rotate(-3deg);
+  transform: rotate(-3deg);
+}
+
+.boxshadow .effect3:after {
+  -webkit-transform: rotate(3deg);
+  -moz-transform: rotate(3deg);
+  -o-transform: rotate(3deg);
+  -ms-transform: rotate(3deg);
+  transform: rotate(3deg);
+  right: 10px;
+  left: auto;
+}
+
+@-webkit-keyframes load {
+  from {
+    -webkit-transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    -webkit-transform: scale(1);
+  }
+}
+
+@-moz-keyframes load {
+  from {
+    -moz-transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    -moz-transform: scale(1);
+  }
+}
+
+@-ms-keyframes load {
+  from {
+    -ms-transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    -ms-transform: scale(1);
+  }
+}
+
+@-o-keyframes load {
+  from {
+    -o-transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    -o-transform: scale(1);
+  }
+}
+
+hr.soften {
+  height: 1px;
+  background-image: -webkit-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,.1), rgba(0,0,0,0));
+  background-image:    -moz-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,.1), rgba(0,0,0,0));
+  background-image:     -ms-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,.1), rgba(0,0,0,0));
+  background-image:      -o-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,.1), rgba(0,0,0,0));
+  border: 0;
+}

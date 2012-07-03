@@ -19,6 +19,9 @@ var
   troop = require('mongoose-troop'),
   mongooseTypes = require("mongoose-types"),
 
+  // utils
+  moment = require('moment'),
+
   /** Yay, out application name. */
   app_name = "Sandbox",
 
@@ -49,8 +52,10 @@ app.configure(function () {
 // helpers
 
 app.helpers({
+  m_calendar: function (date) {
+    return moment(date).calendar();
+  }
 });
-
 
 /** Model **/
 
@@ -66,7 +71,9 @@ var
 
 mongoose.connect(process.env.MONGOHQ_URL || 'mongodb://localhost/sandbox');
 
-var Schema = mongoose.Schema; //Schema.ObjectId
+var Schema = mongoose.Schema,
+  ObjectId = Schema.ObjectId,
+  Mixed = Schema.Types.Mixed;
 
 var Point = new Schema({
   lat: {
@@ -102,14 +109,36 @@ User.plugin(troop.basicAuth, {
 
 User.plugin(troop.timestamp);
 
+var Log = new Schema({
+  _user: {
+    type: ObjectId,
+    ref: 'User'
+  },
+  verb: {
+    type: String,
+    required: true,
+    default: 'GET'
+  },
+  action: {
+    type: String,
+    required: true
+  },
+  value: {
+    type: Mixed
+  }
+});
+
+Log.plugin(troop.timestamp, { useVirtual: false });
+
 // models
 
 var
   PointModel = mongoose.model('Point', Point),
   BoundsModel = mongoose.model('Bounds', Bounds),
-  UserModel =  mongoose.model('User', User);
+  UserModel =  mongoose.model('User', User),
+  LogModel = mongoose.model('Log', Log);
 
-app.get('/test', checkAuth, function (req, res, next) {
+app.get('/maps/reset', checkAuth, function (req, res, next) {
   var test_bounds = [{
     points: [
       {
@@ -175,9 +204,21 @@ app.get('/test', checkAuth, function (req, res, next) {
     });
 });
 
+function _log(user, verb, action, value) {
+  // create log
+  new LogModel({
+    _user: user._id,
+    verb: verb,
+    action: action,
+    value: value
+  }).save(function (err) {
+    // pass
+  }); // send and forget
+}
+
 /** Services. **/
 
-app.get('/bounds', checkAuth, function (req, res, next) {
+app.get('/maps/bounds', checkAuth, function (req, res, next) {
   // find user id
   UserModel
     .findOne({email: req.query.username || 'user@mail.com'}, ['bounds'])
@@ -194,7 +235,7 @@ app.get('/bounds', checkAuth, function (req, res, next) {
   });
 });
 
-app.post('/bounds', checkAuth, function (req, res, next) {
+app.post('/maps/bounds', checkAuth, function (req, res, next) {
   console.info("Saving bounds for: %s. %j", req.body.username, req.body.bounds);
   // find user id
   UserModel
@@ -208,23 +249,41 @@ app.post('/bounds', checkAuth, function (req, res, next) {
       if (err1) {
         return next(err1);
       }
+      _log(doc, 'POST', 'bounds');
       res.json(doc);
     });
   });
 });
 
-app.get('/address', checkAuth, function (req, res) {
-  var keywords = req.query.keywords, bounds = req.query.bounds, client = require('request');
-  console.info("Searching address: %s (%s)", keywords, bounds);
-  client.get({
-    url: 'http://maps.googleapis.com/maps/api/geocode/json?address=' + encodeURIComponent(keywords) +
-      '&bounds=' + bounds + '&region=ar&language=es&sensor=false',
-    headers: {
-      'Content-Type': 'application/json'
+app.get('/maps/address', checkAuth, function (req, res, next) {
+  var keywords = req.query.keywords, bounds = req.query.bounds, username = req.query.username,
+    client = require('request');
+  console.info("Searching address: %s at: %s for user: %s", keywords, bounds, username);
+  // find user id
+  UserModel
+    .findOne({email: username || 'user@mail.com'})
+    .exec(function (err, doc) {
+    if (err) {
+      return next(err);
     }
-  }, function (error, response, body) {
-    console.log(body);
-    res.json(body);
+    if (doc) {
+      client.get({
+        url: 'http://maps.googleapis.com/maps/api/geocode/json?address=' + encodeURIComponent(keywords) +
+          '&bounds=' + bounds + '&region=ar&language=es&sensor=false',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }, function (err1, response, body) {
+        if (err1) {
+          return next(err1);
+        }
+        _log(doc, 'GET', 'address', {keywords: keywords});
+        // send response
+        res.json(JSON.parse(body));
+      });
+    } else {
+      res.send(500);
+    }
   });
 });
 
@@ -259,6 +318,24 @@ app.get('/maps', checkAuth, function (req, res, next) {
   });
 
 });
+
+app.get('/maps/log', checkAuth, function (req, res, next) {
+  // find user id
+  LogModel
+    .find({})
+    .populate('_user', ['email'])
+    .sort('created', -1)
+    .exec(function (err, logs) {
+      if (err) {
+        return next(err);
+      }
+      res.render('logs', {
+        debug: app.settings.env === "development",
+        logs: logs
+      });
+    });
+});
+
 
 // environment specific
 

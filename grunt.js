@@ -25,13 +25,19 @@ module.exports = function (grunt) {
         'js/jquery.easing.1.3.js',
         'js/jquery.scrollTo-1.4.2-min.js',
         'js/maps.js'
+      ],
+      logs: [
+        'js/jquery.ba-dotimeout.min.js',
+        'js/jquery.dataTables.min.js',
+        'js/logs.js'
       ]
     },
     lint: {
       sandbox: ['grunt.js', 'app.js', 'js/sandbox.js'],
 
       // modules
-      maps: ['js/maps.js']
+      maps: ['js/maps.js'],
+      logs: ['js/logs.js']
     },
     concat: {
       sandbox: {
@@ -43,6 +49,10 @@ module.exports = function (grunt) {
       maps: {
         src: ['<config:files.maps>'],
         dest: 'public/js/maps.js'
+      },
+      logs: {
+        src: ['<config:files.logs>'],
+        dest: 'public/js/logs.js'
       }
     },
     min: {
@@ -55,6 +65,10 @@ module.exports = function (grunt) {
       maps: {
         src: ['<banner:meta.banner>', '<config:files.maps>'],
         dest: 'public/js/maps.min.js'
+      },
+      logs: {
+        src: ['<banner:meta.banner>', '<config:files.logs>'],
+        dest: 'public/js/logs.min.js'
       }
     },
     recess: {
@@ -75,6 +89,14 @@ module.exports = function (grunt) {
           compile: true,
           compress: true
         }
+      },
+      logs: {
+        src: ['less/logs.less'],
+        dest: 'public/css/logs.css',
+        options: {
+          compile: true,
+          compress: true
+        }
       }
     },
     replace: {
@@ -91,14 +113,16 @@ module.exports = function (grunt) {
       recess: {
         files: [
           '<config:recess.sandbox.src>',
-          '<config:recess.maps.src>'
+          '<config:recess.maps.src>',
+          '<config:recess.logs.src>'
         ],
         tasks: 'recess growl:rebuild'
       },
       js: {
         files: [
           '<config:files.sandbox>',
-          '<config:files.maps>'
+          '<config:files.maps>',
+          '<config:files.logs>'
         ],
         tasks: 'lint concat growl:rebuild'
       }
