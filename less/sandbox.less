@@ -117,13 +117,15 @@ body {
   user-select: none;
 }
 
-.touch input {
-  -webkit-user-select: text;
-  -khtml-user-select: text;
-  -moz-user-select: text;
-  -o-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
+.touch input,
+.touch textarea,
+.touch select {
+  -webkit-user-select: auto;
+  -khtml-user-select: auto;
+  -moz-user-select: auto;
+  -o-user-select: auto;
+  -ms-user-select: auto;
+  user-select: auto;
 }
 
 .no-touch ::selection {
