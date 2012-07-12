@@ -477,7 +477,7 @@ function initialize(data) {
 
     google.maps.event.addListener(polygon, 'rightclick', function (mev) {
       if (mev.vertex !== null) {
-        console.info('Right click event at polygon. Vertex: %i', mev.vertex);
+        // console.info('Right click event at polygon. Vertex: %i', mev.vertex);
         polygon.getPath().removeAt(mev.vertex);
       }
     });

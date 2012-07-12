@@ -21,6 +21,7 @@ var
 
   // utils
   moment = require('moment'),
+  pkg = require('package')(this),
 
   /** Yay, out application name. */
   app_name = "Sandbox",
@@ -291,7 +292,8 @@ app.get('/maps/address', checkAuth, function (req, res, next) {
 
 app.get('/', checkAuth, function (req, res, next) {
   res.render('index', {
-    debug: app.settings.env === "development"
+    debug: app.settings.env === "development",
+    version: pkg.version
   });
 });
 
@@ -309,6 +311,7 @@ app.get('/maps', checkAuth, function (req, res, next) {
       // res.json(doc);
       res.render('maps', {
         debug: app.settings.env === "development",
+        version: pkg.version,
         bounds: JSON.stringify(doc.bounds)
       });
 
@@ -331,6 +334,7 @@ app.get('/logs', checkAuth, function (req, res, next) {
       }
       res.render('logs', {
         debug: app.settings.env === "development",
+        version: pkg.version,
         logs: logs
       });
     });
