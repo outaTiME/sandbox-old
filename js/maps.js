@@ -3,6 +3,64 @@
 /** Main method, will be called from template. **/
 function initialize(data) {
 
+  // prototype google maps
+
+  // Poygon getBounds extension - google-maps-extensions
+  // http://code.google.com/p/google-maps-extensions/source/browse/google.maps.Polygon.getBounds.js
+  if (!google.maps.Polygon.prototype.getBounds) {
+    google.maps.Polygon.prototype.getBounds = function (latLng) {
+      var bounds = new google.maps.LatLngBounds();
+      var paths = this.getPaths();
+      var path;
+
+      for (var p = 0; p < paths.getLength(); p++) {
+        path = paths.getAt(p);
+        for (var i = 0; i < path.getLength(); i++) {
+          bounds.extend(path.getAt(i));
+        }
+      }
+
+      return bounds;
+    };
+  }
+
+  // Polygon containsLatLng - method to determine if a latLng is within a polygon
+  google.maps.Polygon.prototype.containsLatLng = function (latLng) {
+    // Exclude points outside of bounds as there is no way they are in the poly
+    var bounds = this.getBounds();
+
+    if (bounds !== null && !bounds.contains(latLng)) {
+      return false;
+    }
+
+    // Raycast point in polygon method
+    var inPoly = false;
+
+    var numPaths = this.getPaths().getLength();
+    for (var p = 0; p < numPaths; p++) {
+      var path = this.getPaths().getAt(p);
+      var numPoints = path.getLength();
+      var j = numPoints - 1;
+
+      for (var i = 0; i < numPoints; i++) {
+        var vertex1 = path.getAt(i);
+        var vertex2 = path.getAt(j);
+
+        if (vertex1.lng() < latLng.lng() && vertex2.lng() >= latLng.lng() || vertex2.lng() < latLng.lng() && vertex1.lng() >= latLng.lng())  {
+          if (vertex1.lat() + (latLng.lng() - vertex1.lng()) / (vertex2.lng() - vertex1.lng()) * (vertex2.lat() - vertex1.lat()) < latLng.lat()) {
+            inPoly = !inPoly;
+          }
+        }
+
+        j = i;
+      }
+    }
+
+    return inPoly;
+  };
+
+  // own code
+
   var
 
     /** Current section anchor point. **/
@@ -145,7 +203,7 @@ function initialize(data) {
           // update title
           title_elem.text(data.results[0].formatted_address);
           // title_elem.textOverflow();
-          var contains = bounds.contains(pos);
+          var contains = shared_polygon.containsLatLng(pos);
           // attach classes
           inoutClass(title_elem, contains);
           inoutClass(map_elem, contains);
@@ -416,6 +474,14 @@ function initialize(data) {
       // console.info('Vertex moved.');
       updateBounds(this);
     });
+
+    google.maps.event.addListener(polygon, 'rightclick', function (mev) {
+      if (mev.vertex !== null) {
+        console.info('Right click event at polygon. Vertex: %i', mev.vertex);
+        polygon.getPath().removeAt(mev.vertex);
+      }
+    });
+
   }
 
 }
