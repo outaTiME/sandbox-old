@@ -43,7 +43,7 @@ app.configure(function () {
     layout: false
   });
   app.use(express.cookieParser());
-  app.use(express.session({ secret: 'foobar' }));
+  app.use(express.session({ secret: '29jYP87V!=HE06}q:Yv-Lbm/8Vs}7n' }));
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
@@ -55,7 +55,10 @@ app.configure(function () {
 app.helpers({
   m_calendar: function (date) {
     return moment(date).calendar();
-  }
+  },
+  year: moment().year(),
+  debug: app.settings.env === "development",
+  version: pkg.version
 });
 
 /** Model **/
@@ -140,7 +143,7 @@ var
   UserModel =  mongoose.model('User', User),
   LogModel = mongoose.model('Log', Log);
 
-app.get('/maps/reset', checkAuth, function (req, res, next) {
+app.get('/inout/reset', checkAuth, function (req, res, next) {
   var test_bounds = [{
     points: [
       {
@@ -219,7 +222,7 @@ function _log(user, module, verb, action, value) {
 
 /** Services. **/
 
-app.get('/maps/bounds', checkAuth, function (req, res, next) {
+app.get('/inout/bounds', checkAuth, function (req, res, next) {
   // find user id
   UserModel
     .findOne({email: req.query.username || 'user@mail.com'}, ['bounds'])
@@ -236,7 +239,7 @@ app.get('/maps/bounds', checkAuth, function (req, res, next) {
   });
 });
 
-app.post('/maps/bounds', checkAuth, function (req, res, next) {
+app.post('/inout/bounds', checkAuth, function (req, res, next) {
   console.info("Saving bounds for: %s. %j", req.body.username, req.body.bounds);
   // find user id
   UserModel
@@ -250,13 +253,13 @@ app.post('/maps/bounds', checkAuth, function (req, res, next) {
       if (err1) {
         return next(err1);
       }
-      _log(doc, 'maps', 'POST', 'bounds');
+      _log(doc, 'inout', 'POST', 'bounds');
       res.json(doc);
     });
   });
 });
 
-app.get('/maps/address', checkAuth, function (req, res, next) {
+app.get('/inout/address', checkAuth, function (req, res, next) {
   var keywords = req.query.keywords, bounds = req.query.bounds, username = req.query.username,
     client = require('request');
   console.info("Searching address: %s at: %s for user: %s", keywords, bounds, username);
@@ -278,7 +281,7 @@ app.get('/maps/address', checkAuth, function (req, res, next) {
         if (err1) {
           return next(err1);
         }
-        _log(doc, 'maps', 'GET', 'address', {keywords: keywords});
+        _log(doc, 'inout', 'GET', 'address', {keywords: keywords});
         // send response
         res.json(JSON.parse(body));
       });
@@ -292,12 +295,11 @@ app.get('/maps/address', checkAuth, function (req, res, next) {
 
 app.get('/', checkAuth, function (req, res, next) {
   res.render('index', {
-    debug: app.settings.env === "development",
-    version: pkg.version
+    // pass
   });
 });
 
-app.get('/maps', checkAuth, function (req, res, next) {
+app.get('/inout', checkAuth, function (req, res, next) {
 
   // find user id
   UserModel
@@ -309,9 +311,7 @@ app.get('/maps', checkAuth, function (req, res, next) {
     console.info("Bounds for: %s. %j", req.query.username, doc.bounds);
     if (doc) {
       // res.json(doc);
-      res.render('maps', {
-        debug: app.settings.env === "development",
-        version: pkg.version,
+      res.render('inout', {
         bounds: JSON.stringify(doc.bounds)
       });
 
@@ -333,8 +333,6 @@ app.get('/logs', checkAuth, function (req, res, next) {
         return next(err);
       }
       res.render('logs', {
-        debug: app.settings.env === "development",
-        version: pkg.version,
         logs: logs
       });
     });
@@ -344,13 +342,10 @@ app.get('/logs', checkAuth, function (req, res, next) {
 // environment specific
 
 app.configure('development', function () {
-  // app.use(gzip.staticGzip(__dirname + '/public'));
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
 app.configure('production', function () {
-  /* var oneYear = 31557600000;
-  app.use(gzip.staticGzip(__dirname + '/public', { maxAge: oneYear })); */
   app.use(express.errorHandler());
 });
 

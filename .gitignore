@@ -15,4 +15,5 @@ attic
 
 # Own generated
 public/js/sandbox.js
-public/js/maps.js
+public/js/inout.js
+public/js/logs.js

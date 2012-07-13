@@ -6,12 +6,14 @@
   /* padding: 0 18px; */
 }
 
+/*
 #home #box ul.nav.nav-tabs li.version  {
   float: right;
   padding-top: 8px;
   color: #BBB;
   font-size: 10px;
 }
+*/
 
 #home #box .tabbable .tab-content {
 }
@@ -29,7 +31,7 @@
 
 #home #box .tabbable .tab-content section .page-header [class^="icon-"],
 #home #box .tabbable .tab-content section .page-header [class*=" icon-"] {
-  line-height: 27px;
+  /* line-height: 27px; */
   margin: 3px 9px 0;
 }
 
@@ -85,13 +87,49 @@ section .page-header i {
   max-width: none;
 }
 
+.map-container {
+  position: relative
+}
+
+.map-container .info {
+  z-index: 1900;
+  margin: 18px;
+  /* margin: 5px; */
+  padding: 0px;
+  top: 0px;
+  right: 0px;
+  width: 120px;
+  /* height: 100px; */
+  /* opacity: 0.8; */
+  /* cursor: wait; */
+  position: absolute;
+  padding-top: 6px;
+  /* display: none; */
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  color: white;
+}
+
+.map-container .info p.status {
+  /* font-family: "Helvetica Neue",Helvetica,Arial,sans-serif; */
+  font-size: 18px;
+  font-weight: 200;
+  /* line-height: 25px;  */
+  /* line-height: 28px !important; */
+}
+
 /** In / Out styles **/
 
-section#view span.in {
+section#view span.in,
+section#view [class^="icon-"].in,
+section#view [class*=" icon-"].in {
   color: @successText;
 }
 
-section#view span.out {
+section#view span.out,
+section#view [class^="icon-"].out,
+section#view [class*=" icon-"].out {
   color: @errorText;
 }
 
@@ -101,4 +139,34 @@ section#view span.out {
 
 #map.out  {
   border: 2px solid @errorText;
+}
+
+.map-container .info .icon-large {
+  font-size: 56px;
+  text-align: center;
+  line-height: 68px;
+}
+
+.map-container .info.inside {
+  border: 2px solid @successText;
+  background-color: @successText;
+  display: none;
+}
+
+.map-container .info.outside {
+  border: 2px solid @errorText;
+  background-color: @errorText;
+  display: none;
+}
+
+.map-container .info.outside p.status {
+  /* margin-bottom: 0px; */
+}
+
+.map-container .info.inside .icon-large {
+  color: darken(@successText, 15%);
+}
+
+.map-container .info.outside .icon-large {
+  color: darken(@errorText, 15%);
 }

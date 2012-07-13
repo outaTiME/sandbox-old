@@ -1,14 +1,14 @@
 extends box
 
 block title
-  title Maps &#8212; Sandbox
+  title Inout &#8212; Sandbox
 
 append styles
-  link(rel="stylesheet", href="/css/maps.css")
+  link(rel="stylesheet", href="/css/inout.css")
 
 append scripts
   script(src="http://maps.googleapis.com/maps/api/js?sensor=false&language=es&amp;region=AR&libraries=drawing")
-  script(src="/js/maps" + (debug === true ? ".js" : ".min.js"))
+  script(src="/js/inout" + (debug === true ? ".js" : ".min.js"))
   script
     $(function () {
       initialize(!{bounds});
@@ -21,15 +21,16 @@ append box
         a(href="#1", data-toggle="tab") Home
       li
         a(href="#2", data-toggle="tab") Viewport
-      li.version
-        | v.#{version}
+      //
+        li.version
+          | v.#{version}
     .tab-content
       #1.tab-pane.active
         section#place_locator
           .page-header
 
             div
-              i.icon-search
+              i.icon-search.icon-large
               span Place locator
 
           .alert.alert-info
@@ -48,7 +49,7 @@ append box
           .page-header.clearfix
 
             div(style="display: block; float: left;")
-              i.icon-map-marker
+              i.icon-map-marker.icon-large
               span.ellipsis
 
             div(style="display: block; float: right;")
@@ -60,7 +61,15 @@ append box
               | Test feature is coming soon, you're not looking too good. Nulla vitae elit libero, a pharetra augue. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
 
           div(style="margin-left: 4px;")
-            #map
+            .map-container
+              #map
+              .info.inside
+                i.icon-ok.icon-large
+                p.status Inside
+              .info.outside
+                i.icon-remove.icon-large
+                p.status Outside
+                p.small
 
       #2.tab-pane
 
@@ -70,7 +79,7 @@ append box
             .page-header.clearfix
 
               div(style="display: block; float: left;")
-                i.icon-eye-open
+                i.icon-eye-open.icon-large
                 span Area
 
               div(style="display: block; float: right;")

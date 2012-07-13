@@ -6,13 +6,13 @@
 
 /* TEAM */
   Web Developer / Graphic Designer: Ariel Oscar Falduto
-  Site: http://inout.outa.im
+  Site: http://sandbox.outa.im
   Twitter: @outa7iME
   Contact: afalduto at gmail dot com
   From: Buenos Aires, Argentina
 
 /* SITE */
-  Last update: Thu Jul 12 2012 14:57:38
+  Last update: Thu Jul 12 2012 22:16:07
   Standards: HTML5, CSS3, robotstxt.org, humanstxt.org
   Components: H5BP, Modernizr, jQuery, Twitter Bootstrap, LESS, Jade, Grunt
   Software: Sublime Text 2, Photoshop, LiveReload

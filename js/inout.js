@@ -173,7 +173,7 @@ function initialize(data) {
     var area = $("form .area"), button = $("form button"), keywords = $("#search #keywords");
     $.ajax({
       type: "GET",
-      url: '/maps/address',
+      url: '/inout/address',
       // dataType: "json",
       data: {
         keywords: keywords.val(),
@@ -190,7 +190,8 @@ function initialize(data) {
           var result = results[i], type = result.types[0];
           // if (type === "street_address" || type === "route") {
           var coords = result.geometry.location, pos = new google.maps.LatLng(coords.lat, coords.lng),
-            title_elem = $("section#view span"), map_elem = $("section#view #map");
+            icon_elem = $("section#view .page-header i"), title_elem = $("section#view .page-header span"),
+            map_elem = $("section#view #map"), map_container_elem = $(".map-container");
           if (marker) {
             marker.setPosition(pos);
           } else {
@@ -205,19 +206,27 @@ function initialize(data) {
           // title_elem.textOverflow();
           var contains = shared_polygon.containsLatLng(pos);
           // attach classes
+          inoutClass(icon_elem, contains);
           inoutClass(title_elem, contains);
           inoutClass(map_elem, contains);
+          // hide
+          $(".inside, .outside", map_container_elem).hide();
           // bounds management
           if (contains) {
             // green
             map.setCenter(pos);
             map.setZoom(16);
+            // show
+            $(".inside", map_container_elem).show();
           } else {
             // red
             var bounds_ext = new google.maps.LatLngBounds(bounds.getSouthWest(), bounds.getNorthEast());
             bounds_ext.extend(pos);
             var distance = google.maps.geometry.spherical.computeDistanceBetween(bounds.getCenter(), pos) / 1000;
-            // console.info('Away for: %i kms.', distance);
+            // show
+            var outside = $(".outside", map_container_elem);
+            $("p.small", outside).text(distance.toFixed(1) + "kms away");
+            outside.show();
             if (distance > 1500) {
               map.setCenter(pos);
               map.setZoom(6);
@@ -272,7 +281,7 @@ function initialize(data) {
 
     $.ajax({
       type: "POST",
-      url: '/maps/bounds',
+      url: '/inout/bounds',
       dataType: "json",
       data: {
         // username: 'user@mail.com',
@@ -324,6 +333,12 @@ function initialize(data) {
       zoomControl: true,
       minZoom: 4
     });
+
+    // load done
+    google.maps.event.addListenerOnce(map, 'idle', function () {
+      unblock();
+    });
+
     // map.fitBounds(bounds);
     shared_polygon = new google.maps.Polygon({
       paths: triangleCoords,
@@ -346,7 +361,7 @@ function initialize(data) {
     // ajax call
     $.ajax({
       type: "GET",
-      url: '/maps/bounds',
+      url: '/inout/bounds',
       dataType: "json",
       data: {
         // username: 'user@mail.com'

@@ -20,11 +20,11 @@ module.exports = function (grunt) {
       ],
 
       // modules
-      maps: [
+      inout: [
         'js/jquery.ba-dotimeout.min.js',
         'js/jquery.easing.1.3.js',
         'js/jquery.scrollTo-1.4.2-min.js',
-        'js/maps.js'
+        'js/inout.js'
       ],
       logs: [
         'js/jquery.ba-dotimeout.min.js',
@@ -36,7 +36,7 @@ module.exports = function (grunt) {
       sandbox: ['grunt.js', 'app.js', 'js/sandbox.js'],
 
       // modules
-      maps: ['js/maps.js'],
+      inout: ['js/inout.js'],
       logs: ['js/logs.js']
     },
     concat: {
@@ -46,9 +46,9 @@ module.exports = function (grunt) {
       },
 
       // modules
-      maps: {
-        src: ['<config:files.maps>'],
-        dest: 'public/js/maps.js'
+      inout: {
+        src: ['<config:files.inout>'],
+        dest: 'public/js/inout.js'
       },
       logs: {
         src: ['<config:files.logs>'],
@@ -62,9 +62,9 @@ module.exports = function (grunt) {
       },
 
       // modules
-      maps: {
-        src: ['<banner:meta.banner>', '<config:files.maps>'],
-        dest: 'public/js/maps.min.js'
+      inout: {
+        src: ['<banner:meta.banner>', '<config:files.inout>'],
+        dest: 'public/js/inout.min.js'
       },
       logs: {
         src: ['<banner:meta.banner>', '<config:files.logs>'],
@@ -82,9 +82,9 @@ module.exports = function (grunt) {
       },
 
       // modules
-      maps: {
-        src: ['less/maps.less'],
-        dest: 'public/css/maps.css',
+      inout: {
+        src: ['less/inout.less'],
+        dest: 'public/css/inout.css',
         options: {
           compile: true,
           compress: true
@@ -113,7 +113,7 @@ module.exports = function (grunt) {
       recess: {
         files: [
           '<config:recess.sandbox.src>',
-          '<config:recess.maps.src>',
+          '<config:recess.inout.src>',
           '<config:recess.logs.src>'
         ],
         tasks: 'recess growl:rebuild'
@@ -121,7 +121,7 @@ module.exports = function (grunt) {
       js: {
         files: [
           '<config:files.sandbox>',
-          '<config:files.maps>',
+          '<config:files.inout>',
           '<config:files.logs>'
         ],
         tasks: 'lint concat growl:rebuild'
