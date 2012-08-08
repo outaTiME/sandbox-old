@@ -12,7 +12,7 @@
   From: Buenos Aires, Argentina
 
 /* SITE */
-  Last update: Wed Aug 08 2012 11:32:25
+  Last update: Wed Aug 08 2012 11:37:21
   Standards: HTML5, CSS3, robotstxt.org, humanstxt.org
   Components: H5BP, Modernizr, jQuery, Twitter Bootstrap, LESS, Jade, Grunt
   Software: Sublime Text 2, Photoshop, LiveReload
