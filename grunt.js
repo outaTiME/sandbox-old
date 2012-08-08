@@ -29,6 +29,9 @@ module.exports = function (grunt) {
       logs: [
         'js/jquery.ba-dotimeout.min.js',
         'js/jquery.dataTables.min.js',
+        'js/moment.min.js',
+        'js/livestamp.min.js',
+        'js/highlight.pack.js',
         'js/logs.js'
       ]
     },
@@ -194,7 +197,8 @@ module.exports = function (grunt) {
       globals: {
         'Modernizr': true,
         'google': true,
-        'Spinner': true
+        'Spinner': true,
+        'hljs': true
       }
     },
     replacer: {},

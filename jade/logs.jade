@@ -17,17 +17,31 @@ append box
           th User
         th Time
         th Module
-        th Verb
         th Action
-        th Value
+        th Query
+        th(style="text-align: center;") Verb
+        th(style="text-align: center;") Response
     tbody
       each log, i in logs
         tr
           //
             td #{log._user.email}
-          td #{m_calendar(log.created)}
+          td
+            span(data-livestamp=m_timestamp(log.created))
           td #{log.module}
-          td #{log.verb}
           td #{log.action}
-          td #{JSON.stringify(log.value)}
-
+          td #{log.query}
+          td(style="text-align: center;") #{log.verb}
+          td(style="text-align: center;")
+            a(data-toggle="modal", href="#" + log._id)
+              i.icon-share
+            //
+            div.modal.hide(id=log._id)
+              div(class="modal-header")
+                button(type="button", class="close", data-dismiss="modal") ×
+                h3 Response
+              div.modal-body
+                pre
+                  code(class="json") #{JSON.stringify(log.response, null, '  ')}
+              div.modal-footer
+                a.btn(href="#", data-dismiss="modal") Close

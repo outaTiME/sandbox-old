@@ -19,4 +19,16 @@ $(function () {
     });
   });
 
+  /*
+
+  $('div.modal').on('shown', function () {
+    console.info("id %s modal, shown ...", $(this).attr('id'));
+    hljs.highlightBlock($('pre code', this).get(0));
+  });
+
+  */
+
+  // color
+  hljs.initHighlightingOnLoad();
+
 });

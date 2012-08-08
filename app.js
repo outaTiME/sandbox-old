@@ -56,6 +56,9 @@ app.helpers({
   m_calendar: function (date) {
     return moment(date).calendar();
   },
+  m_timestamp: function (date) {
+    return moment(date).unix();
+  },
   year: moment().year(),
   debug: app.settings.env === "development",
   version: pkg.version
@@ -128,7 +131,10 @@ var Log = new Schema({
     type: String,
     required: true
   },
-  value: {
+  query: {
+    type: Mixed
+  },
+  response: {
     type: Mixed
   }
 });
@@ -209,14 +215,15 @@ app.get('/inout/reset', checkAuth, function (req, res, next) {
     });
 });
 
-function _log(user, module, verb, action, value) {
+function _log(user, module, verb, action, query, response) {
   // create log
   new LogModel({
     _user: user._id,
     module: module,
     verb: verb,
     action: action,
-    value: value
+    query: query,
+    response: response
   }).save(); // send and forget
 }
 
@@ -281,9 +288,12 @@ app.get('/inout/address', checkAuth, function (req, res, next) {
         if (err1) {
           return next(err1);
         }
-        _log(doc, 'inout', 'GET', 'address', {keywords: keywords});
+        var result = JSON.parse(body);
+        // log response ...
+        _log(doc, 'inout', 'GET', 'address', keywords, result);
+        console.info("Address result for: %j. %j", {keywords: keywords, bounds: bounds}, result);
         // send response
-        res.json(JSON.parse(body));
+        res.json(result);
       });
     } else {
       res.send(500);
