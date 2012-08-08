@@ -19,7 +19,7 @@
     "gzippo": "0.x",
     "request": "2.x",
     "mongoose": "2.7.x",
-    "mongoose-troop": "0.0.x",
+    "mongoose-troop": "0.0.7",
     "mongoose-types": "1.0.x",
     "moment": "1.6.x",
     "package": "1.0.x"
