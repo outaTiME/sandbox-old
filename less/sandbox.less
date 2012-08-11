@@ -10,11 +10,12 @@ body {
 #home p.version {
   text-align: center;
   padding-top: 8px;
-  color: #CCC;
+  color: #AAA;
   font-size: 10px;
 }
 
-#home #box {
+#home #box,
+#small #box {
   padding: 18px;
   background: #fff;
   text-align: center;
@@ -26,7 +27,8 @@ body {
 }
 
 #home #box .wrapper {
-  height: 454px;
+  /* height: 454px; */
+  height: auto;
 }
 
 #home #box .overlay {
@@ -70,6 +72,10 @@ body {
   height: 400px;
   overflow: hidden;
   /* margin-top: 18px; */
+}
+
+form {
+  margin: 0;
 }
 
 /* Pixel ratio of 1.5. Background-size is 1/1.5 = 66.67% (of a 150px image) */
@@ -146,7 +152,9 @@ body {
 }
 
 .flexbox #home .flex,
-.flexbox-legacy #home .flex {
+.flexbox-legacy #home .flex,
+.flexbox #small .flex,
+.flexbox-legacy #small .flex {
   display: -webkit-box;
   display: -moz-box;
   display: -ms-box;

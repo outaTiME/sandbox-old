@@ -14,20 +14,22 @@ module.exports = function (grunt) {
     },
     files: {
       sandbox: [
-        'js/jquery-1.7.2.min.js',
+        'js/jquery-1.8.0.min.js',
         'js/bootstrap/bootstrap.min.js',
+        'js/jquery.ba-dotimeout.min.js',
         'js/sandbox.js'
       ],
 
       // modules
+      login: [
+        'js/login.js'
+      ],
       inout: [
-        'js/jquery.ba-dotimeout.min.js',
         'js/jquery.easing.1.3.js',
         'js/jquery.scrollTo-1.4.2-min.js',
         'js/inout.js'
       ],
       logs: [
-        'js/jquery.ba-dotimeout.min.js',
         'js/jquery.dataTables.min.js',
         'js/moment.min.js',
         'js/livestamp.min.js',
@@ -39,6 +41,7 @@ module.exports = function (grunt) {
       sandbox: ['grunt.js', 'app.js', 'js/sandbox.js'],
 
       // modules
+      login: ['js/login.js'],
       inout: ['js/inout.js'],
       logs: ['js/logs.js']
     },
@@ -49,6 +52,10 @@ module.exports = function (grunt) {
       },
 
       // modules
+      login: {
+        src: ['<config:files.login>'],
+        dest: 'public/js/login.js'
+      },
       inout: {
         src: ['<config:files.inout>'],
         dest: 'public/js/inout.js'
@@ -65,6 +72,10 @@ module.exports = function (grunt) {
       },
 
       // modules
+      login: {
+        src: ['<banner:meta.banner>', '<config:files.login>'],
+        dest: 'public/js/login.min.js'
+      },
       inout: {
         src: ['<banner:meta.banner>', '<config:files.inout>'],
         dest: 'public/js/inout.min.js'
@@ -85,6 +96,14 @@ module.exports = function (grunt) {
       },
 
       // modules
+      login: {
+        src: ['less/login.less'],
+        dest: 'public/css/login.css',
+        options: {
+          compile: true,
+          compress: true
+        }
+      },
       inout: {
         src: ['less/inout.less'],
         dest: 'public/css/inout.css',
@@ -116,6 +135,7 @@ module.exports = function (grunt) {
       recess: {
         files: [
           '<config:recess.sandbox.src>',
+          '<config:recess.login.src>',
           '<config:recess.inout.src>',
           '<config:recess.logs.src>'
         ],
@@ -124,6 +144,7 @@ module.exports = function (grunt) {
       js: {
         files: [
           '<config:files.sandbox>',
+          '<config:files.login>',
           '<config:files.inout>',
           '<config:files.logs>'
         ],

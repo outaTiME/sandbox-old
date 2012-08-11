@@ -1,5 +1,4 @@
 
-
 /** Main method, will be called from template. **/
 function initialize(data) {
 

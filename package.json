@@ -1,6 +1,6 @@
 {
   "name": "Sandbox",
-  "version": "0.9.3",
+  "version": "0.9.5",
   "description": "Sandbox project used for test purposes.",
   "homepage": "http://sandbox.outa.im",
   "keywords": ["sandbox", "outa", "outaTiME", "Ariel Falduto"],
@@ -23,7 +23,8 @@
     "mongoose-types": "1.0.x",
     "moment": "1.6.x",
     "package": "1.0.x",
-    "bcrypt": "0.5.x"
+    "bcrypt": "0.5.x",
+    "everyauth": "0.x"
   },
   "devDependencies": {
     "grunt": ">=0.3.9",

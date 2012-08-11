@@ -1,0 +1,26 @@
+extends box_small
+
+block title
+  title Log In &#8212; Sandbox
+
+append styles
+  link(rel="stylesheet", href="/css/login.css")
+
+append scripts
+  script(src="/js/login" + (debug === true ? ".js" : ".min.js"))
+
+append box
+  .login
+    h2 Log In
+    hr.soften
+    form(action="/login", method='POST')
+      fieldset
+        div
+          .control-group
+            .controls
+              input#email(name="email", type="email", placeholder="Email", value=loginFormFieldValue)
+          .control-group
+            .controls
+              input#password(name="password", type="password", placeholder="Password", value=passwordFormFieldValue)
+      .submit
+        button.btn.btn-primary(type="submit", onclick="$(this).hide();") Sign In

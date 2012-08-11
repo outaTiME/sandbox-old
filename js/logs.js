@@ -1,5 +1,4 @@
 
-
 $(function () {
   var oTable = $('#logs').dataTable({
     "bScrollInfinite": true,
