@@ -24,6 +24,17 @@ append box
       //
         li.version
           | v.#{version}
+      li.dropdown(style="float: right;")
+        a.dropdown-toggle(href="#", data-toggle="dropdown") User
+          b.caret
+        ul.dropdown-menu
+          li
+            a(href="#") Profile
+          li
+            a(href="#") Account Settings
+          li.divider
+          li
+            a(href="/logout") Sign Out
     .tab-content
       #1.tab-pane.active
         section#place_locator

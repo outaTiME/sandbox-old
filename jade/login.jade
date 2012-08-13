@@ -13,13 +13,18 @@ append box
   .login
     h2 Log In
     hr.soften
+    - if ('' !== errorClass)
+      .alert.alert-error
+        //-a.close(data-dismiss="alert") x
+        strong Oh snap!&nbsp;
+        | Error found while trying to authenticate user.
     form(action="/login", method='POST')
       fieldset
         div
-          .control-group
+          .control-group(class=errorClass)
             .controls
               input#email(name="email", type="email", placeholder="Email", value=loginFormFieldValue)
-          .control-group
+          .control-group(class=errorClass)
             .controls
               input#password(name="password", type="password", placeholder="Password", value=passwordFormFieldValue)
       .submit

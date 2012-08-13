@@ -231,7 +231,6 @@ app.configure(function () {
   app.use(everyauth.middleware());
   app.use(express.methodOverride());
   app.use(app.router);
-  app.use(gzippo.staticGzip(__dirname + '/public'));
 });
 
 // helpers
@@ -250,6 +249,12 @@ app.helpers({
   year: moment().year(),
   debug: app.settings.env === "development",
   version: pkg.version
+});
+
+app.dynamicHelpers({
+  request: function (req) {
+    return req;
+  }
 });
 
 /** services **/
@@ -458,15 +463,22 @@ app.get('/fixtures/reset', [checkDevelopmentMode], function (req, res, next) {
     });
 });
 
+// show error on screen. False for all envs except development
+// settmgs for custom error handlers
+app.set('showStackError', false);
+
 // environment specific
 
 app.configure('development', function () {
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: false }));
+  app.set('showStackError', true);
+  app.use(express.static(__dirname + '/public'));
 });
 
 app.configure('production', function () {
-  app.use(express.errorHandler());
+  app.use(gzippo.staticGzip(__dirname + '/public'));
 });
+
+app.use(express.logger(':method :url :status'));
 
 // launcher
 
