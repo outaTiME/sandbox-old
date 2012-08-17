@@ -67,7 +67,10 @@ function initialize(data) {
 
     /** Easy scroll helper to use cross app. **/
     scrollHelper = function (section, callback) {
-      section = section || _section || "#place_locator";
+
+      console.info('scrollHelper ... %o', arguments);
+
+      section = section || _section || "section#place_locator";
       $(".tab-pane.active").scrollTo(section, 400, {
         easing: 'easeOutExpo',
         onAfter: callback || $.noop
@@ -258,7 +261,7 @@ function initialize(data) {
   $("body").on("click", "#btn-back", function (event) {
     var area = $("form .area"), button = $("form button"), keywords = $("#search #keywords");
     // console.debug('Cancel button click event fired...');
-    scrollHelper("#place_locator", function () {
+    scrollHelper("section#place_locator", function () {
       $("form :input:visible:enabled:first").select().focus();
     });
   });
@@ -317,9 +320,22 @@ function initialize(data) {
       google.maps.event.trigger(map_bounds, 'resize');
     } else {
       google.maps.event.trigger(map, 'resize');
-      scrollHelper("#place_locator", function () {
-        $("form :input:visible:enabled:first").select().focus();
-      });
+
+      if (triangleCoords.length === 0) {
+        console.info('No data...');
+        scrollHelper("section#welcome", function () {
+          $("form :input:visible:enabled:first").select().focus();
+        });
+
+        $('section#welcome').show();
+        // we must to configure the viewport ...
+      } else {
+        console.info('Yay, we got some data...');
+        scrollHelper("section#place_locator", function () {
+          $("form :input:visible:enabled:first").select().focus();
+        });
+      }
+
     }
   });
 
@@ -335,6 +351,16 @@ function initialize(data) {
 
     // load done
     google.maps.event.addListenerOnce(map, 'idle', function () {
+
+      if (triangleCoords.length === 0) {
+        console.info('No data...');
+        $('section#welcome').show();
+        // we must to configure the viewport ...
+      } else {
+        console.info('Yay, we got some data...');
+        $("form :input:visible:enabled:first").select().focus();
+      }
+
       unblock();
     });
 
@@ -350,7 +376,8 @@ function initialize(data) {
     });
     shared_polygon.setMap(map);
     // select first form element
-    $("form :input:visible:enabled:first").select().focus();
+    // $("form :input:visible:enabled:first").select().focus();
+
   }());
 
   /*

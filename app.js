@@ -68,6 +68,11 @@ var
       // yay, valid execution
       return next();
     }
+  },
+
+  /** Get user from context. **/
+  getUser = function (req) {
+    return req.user.email || req.query.username || req.body.username || 'user@mail.com';
   };
 
 /** Model **/
@@ -276,14 +281,16 @@ function _log(user, module, verb, action, query, response) {
 /** Services. **/
 
 app.get('/inout/bounds', [checkAuth], function (req, res, next) {
+  // get user
+  var user = getUser(req);
   // find user id
   UserModel
-    .findOne({email: req.query.username || 'user@mail.com'}, ['bounds'])
+    .findOne({email: user}, ['bounds'])
     .exec(function (err, doc) {
     if (err) {
       return next(err);
     }
-    console.info("Bounds for: %s. %j", req.query.username, doc.bounds);
+    console.info("Bounds for: %s. %j", user, doc.bounds);
     if (doc) {
       res.json(doc);
     } else {
@@ -292,11 +299,15 @@ app.get('/inout/bounds', [checkAuth], function (req, res, next) {
   });
 });
 
+
+
 app.post('/inout/bounds', [checkAuth], function (req, res, next) {
-  console.info("Saving bounds for: %s. %j", req.body.username, req.body.bounds);
+  // get user
+  var user = getUser(req);
+  console.info("Saving bounds for: %s. %j", user, req.body.bounds);
   // find user id
   UserModel
-    .findOne({email: req.body.username || 'user@mail.com'})
+    .findOne({email: user})
     .exec(function (err, doc) {
     if (err) {
       return next(err);
@@ -313,12 +324,12 @@ app.post('/inout/bounds', [checkAuth], function (req, res, next) {
 });
 
 app.get('/inout/address', [checkAuth], function (req, res, next) {
-  var keywords = req.query.keywords, bounds = req.query.bounds, username = req.query.username,
+  var keywords = req.query.keywords, bounds = req.query.bounds, user = getUser(req),
     client = require('request');
-  console.info("Searching address: %s at: %s for user: %s", keywords, bounds, username);
+  console.info("Searching address: %s at: %s for user: %s", keywords, bounds, user);
   // find user id
   UserModel
-    .findOne({email: username || 'user@mail.com'})
+    .findOne({email: user})
     .exec(function (err, doc) {
     if (err) {
       return next(err);
@@ -357,15 +368,16 @@ app.get('/', [checkAuth], function (req, res, next) {
 });
 
 app.get('/inout', [checkAuth], function (req, res, next) {
-
+  // get user
+  var user = getUser(req);
   // find user id
   UserModel
-    .findOne({email: req.query.username || 'user@mail.com'}, ['bounds'])
+    .findOne({email: user}, ['bounds'])
     .exec(function (err, doc) {
     if (err) {
       return next(err);
     }
-    console.info("Bounds for: %s. %j", req.query.username, doc.bounds);
+    console.info("Bounds for: %s. %j", user, doc.bounds);
     if (doc) {
       // res.json(doc);
       res.render('inout', {
@@ -437,10 +449,16 @@ app.get('/fixtures/reset', [checkDevelopmentMode], function (req, res, next) {
         // exist
         console.info('New user...');
         // create
+        /*
         var user = new UserModel({
           email: "afalduto@gmail.com",
-          password: "stunt688" /*,
-          bounds: test_bounds */
+          password: "foo1234",
+          bounds: test_bounds
+        });
+        */
+        var user = new UserModel({
+          email: "afalduto@gmail.com",
+          password: "foo1234"
         });
         user.save(function (err1) {
           if (err1) {
@@ -452,7 +470,8 @@ app.get('/fixtures/reset', [checkDevelopmentMode], function (req, res, next) {
         // new
         console.info('User exists...');
         // edit
-        doc.bounds = []; /* test_bounds */
+        // doc.bounds = [];
+        doc.bounds = test_bounds;
         doc.save(function (err2) {
           if (err2) {
             return next(err2);
@@ -478,7 +497,8 @@ app.configure('production', function () {
   app.use(gzippo.staticGzip(__dirname + '/public'));
 });
 
-app.use(express.logger(':method :url :status'));
+// app.use(express.logger(':method :url :status'));
+app.use(express.logger('dev'));
 
 // launcher
 

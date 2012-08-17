@@ -29,14 +29,27 @@ append box
           b.caret
         ul.dropdown-menu
           li
-            a(href="#") Profile
+            a.disable(href="#") Profile
           li
-            a(href="#") Account Settings
+            a.disable(href="#") Account Settings
           li.divider
           li
             a(href="/logout") Sign Out
     .tab-content
       #1.tab-pane.active
+        section#welcome
+          .page-header
+
+            div
+              i.icon-eye-open.icon-large
+              span Welcome
+
+          .alert.alert-info
+            strong Heads up!&nbsp;
+            | Best check yo self, you're not looking too good. Nulla vitae elit libero, a pharetra augue. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
+
+          button.btn.btn-primary.btn-large(type="button") Start »
+
         section#place_locator
           .page-header
 
@@ -91,7 +104,7 @@ append box
             .page-header.clearfix
 
               div(style="display: block; float: left;")
-                i.icon-eye-open.icon-large
+                i.icon-screenshot.icon-large
                 span Area
 
               div(style="display: block; float: right;")
