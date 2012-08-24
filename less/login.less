@@ -3,6 +3,7 @@
   font-size: 22px;
   font-weight: 300;
   margin-bottom: 18px;
+  margin-top: 0;
 }
 
 #box .wrapper {
@@ -10,18 +11,18 @@
 }
 
 form fieldset > div {
-  margin-left: 10px;
+  margin-left: 14px;
 }
 
 form input {
   width: 100%;
-  margin-left: -10px;
+  margin-left: -14px;
 }
 
 form .submit {
   margin-top: 9px;
-  // height 28px
-  background-image: url(/images/spinner.gif);
+  height: 30px;
+  background-image: url(/images/small.spinner.gif);
   background-position: center;
   background-repeat: no-repeat;
 }
@@ -34,4 +35,30 @@ hr.soften {
   background-image: -ms-linear-gradient(left, transparent, rgba(0, 0, 0, .1), transparent);
   background-image: -o-linear-gradient(left, transparent, rgba(0, 0, 0, .1), transparent);
   border: 0;
+}
+
+/* Pixel ratio of 1.5. Background-size is 1/1.5 = 66.67% (of a 150px image) */
+/* only screen and (-o-min-device-pixel-ratio: 3/2), */
+@media only screen and (-moz-min-device-pixel-ratio: 1.5),
+  only screen and (-webkit-min-device-pixel-ratio: 1.5),
+  only screen and (min-device-pixel-ratio: 1.5) {
+
+  form .submit {
+    background-image: url("/images/small.spinner@x1.5.gif");
+    background-size: 16px 16px;
+  }
+
+}
+
+/* Pixel ratio of 2. Background-size is 1/2 = 50% (of a 200px image) */
+/* only screen and (-o-min-device-pixel-ratio: 2/1), */
+@media only screen and (-moz-min-device-pixel-ratio: 2),
+  only screen and (-webkit-min-device-pixel-ratio: 2),
+  only screen and (min-device-pixel-ratio: 2) {
+
+  form .submit {
+    background-image: url("/images/small.spinner@x2.gif");
+    background-size: 16px 16px;
+  }
+
 }
