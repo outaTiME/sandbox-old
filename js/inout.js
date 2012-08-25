@@ -77,7 +77,9 @@ function initialize(data) {
 
     shared_polygon,
 
-    triangleCoords = [];
+    triangleCoords = [],
+
+    bounds_updated = false;
 
   /** Functions **/
 
@@ -91,10 +93,20 @@ function initialize(data) {
 
   /** Easy scroll helper to use cross app. **/
   function scrollHelper(section, callback) {
+    var prevSection = _section;
     section = section || _section || "section#place_locator";
+    callback = callback || $.noop;
+    console.debug("visibility: 'visible' for section: %s", section);
+    $(section).css({visibility: "visible"});
     $(".tab-pane.active").scrollTo(section, 400, {
       easing: 'easeOutExpo',
-      onAfter: callback || $.noop
+      onAfter: function () {
+        callback();
+        if (prevSection && prevSection !== section) {
+          console.debug("visibility: 'hidden' for section: %s", prevSection);
+          $(prevSection).css({visibility: "hidden"});
+        }
+      }
     });
     // store displacement
     _section = section;
@@ -118,16 +130,9 @@ function initialize(data) {
     if (data.length === 0) {
       console.info('No data...');
       $('section#welcome').show();
-      // update save button with done ..
-      // $('#btn-save').hide();
-      // $('#btn-done').show();
-      // we must to configure the viewport ...
-
     } else {
       console.info('Yay, we got some data...');
-      $("form :input:visible:enabled:first").select().focus();
-      // $('#btn-save').show();
-      // $('#btn-done').hide();
+      gotoPlaceLocator();
     }
   }
 
@@ -152,6 +157,13 @@ function initialize(data) {
     }
     // update path in shared
     shared_polygon.setPath(clone);
+    // flag bounds update
+    bounds_updated = true;
+    // we're in view mode ??
+    /* if (_section === "section#view") {
+      // goto place locator
+      gotoPlaceLocator(false);
+    } */
   }
 
   /** Manage polygon events. **/
@@ -289,9 +301,11 @@ function initialize(data) {
     scrollHelper("section#welcome");
   }
 
-  function gotoPlaceLocator() {
+  function gotoPlaceLocator(focus) {
     scrollHelper("section#place_locator", function () {
-      $("form :input:visible:enabled:first").select().focus();
+      if (focus !== false)  {
+        $("form :input:visible:enabled:first").select().focus();
+      }
     });
   }
 
@@ -365,15 +379,17 @@ function initialize(data) {
               $("p.small", outside).text(distance.toFixed(1) + "kms away");
               outside.show();
               if (distance > 1500) {
-                map.setCenter(pos);
                 map.setZoom(6);
+                map.setCenter(pos);
               } else {
                 map.fitBounds(bounds_ext);
+                // our center point was pos
+                map.setCenter(pos);
               }
             }
             unblock();
             // go to map ...
-            scrollHelper("#view");
+            scrollHelper("section#view");
             // mark
             found = true;
             break;
@@ -424,9 +440,7 @@ function initialize(data) {
       if (index === "#2") {
         if (map_bounds_size === false) {
           $("#map-bounds").height(
-            $("#2").outerHeight() -
-            $("#2 .page-header").outerHeight() - 18 -
-            4
+            $("#2").outerHeight() - 4
           );
           map_bounds_size = true;
           // with data ??
@@ -444,9 +458,14 @@ function initialize(data) {
         }
       } else {
         google.maps.event.trigger(map, 'resize');
-        // FIXME: [outaTiME] if first search place focus ...
-        // dispatch back action ...
-        // $("#btn-back").trigger('click');
+        // focus only when in search mode
+
+        if ($("section#welcome").is(":hidden")) {
+          if (bounds_updated === true || _section !== "section#view") {
+            gotoPlaceLocator();
+            bounds_updated = false;
+          }
+        }
       }
     });
 
@@ -480,9 +499,9 @@ function initialize(data) {
     // set main map size
     $("#map").height(
       $("#1").outerHeight() -
-      $("#view .page-header").outerHeight() - 18 -
-      // $("#view .alert").outerHeight() - 18 -
-      // $("#view #btn-back").outerHeight() - 18 -
+      $("section#view .page-header").outerHeight() - 18 -
+      // $("section#view .alert").outerHeight() - 18 -
+      // $("section#view #btn-back").outerHeight() - 18 -
       6
     );
     /** Parse input data. **/
@@ -510,13 +529,11 @@ function initialize(data) {
       zoomControl: true,
       minZoom: 4
     });
-
     // load done
     google.maps.event.addListenerOnce(map, 'idle', function () {
       handleData(triangleCoords);
       unblock();
     });
-
     // map.fitBounds(bounds);
     shared_polygon = new google.maps.Polygon({
       paths: triangleCoords || [],
@@ -528,70 +545,6 @@ function initialize(data) {
       clickable: false
     });
     shared_polygon.setMap(map);
-    // select first form element
-    // $("form :input:visible:enabled:first").select().focus();
   }());
-
-  /*
-
-  (function () {
-
-    // ajax call
-    $.ajax({
-      type: "GET",
-      url: '/inout/bounds',
-      dataType: "json",
-      data: {
-        // username: 'user@mail.com'
-      },
-      error: function (xhr, status) {
-        // console.error(status);
-      },
-      success: function (data, textStatus, jqXHR) {
-        var d_bounds = data.bounds;
-        if (d_bounds.length > 0) {
-          var d_points = d_bounds[0].points;
-          if (d_points.length > 0) {
-            for (var i = 0; i < d_points.length; i++) {
-              var d_point = d_points[i], latlng = new google.maps.LatLng(d_point.lat, d_point.lng);
-              triangleCoords.push(latlng);
-              bounds.extend(latlng);
-            }
-            (function () {
-              map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 16,
-                center: bounds.getCenter(),
-                mapTypeId: google.maps.MapTypeId.ROADMAP,
-                disableDefaultUI: true,
-                zoomControl: true,
-                minZoom: 4
-              });
-              // map.fitBounds(bounds);
-              shared_polygon = new google.maps.Polygon({
-                paths: triangleCoords,
-                strokeColor: "#0000FF",
-                strokeOpacity: 0.6,
-                strokeWeight: 2,
-                fillColor: "#0000FF",
-                fillOpacity: 0.15,
-                clickable: false
-              });
-              shared_polygon.setMap(map);
-              // console.info('Bounds loaded, %o', d_points);
-            }());
-          }
-        }
-      },
-      complete: function (jqXHR, textStatus) {
-        setTimeout(function () {
-          unblock();
-        // select first form element
-          $("form :input:visible:enabled:first").select().focus();
-        }, 1000);
-      }
-    });
-  }());
-
-  */
 
 }

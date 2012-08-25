@@ -85,6 +85,11 @@ section .page-header i {
   margin-top: 7px !important;
 }
 
+section#view,
+section#place_locator {
+  visibility: hidden;
+}
+
 /** Map **/
 
 #map, #map-bounds {
@@ -98,7 +103,8 @@ section .page-header i {
   max-width: none;
 }
 
-.map-container {
+.map-container,
+.map-bounds-container {
   position: relative
 }
 
@@ -119,6 +125,15 @@ section .page-header i {
   .border-radius(4px);
   color: white;
 }
+
+.map-bounds-container button {
+  z-index: 900;
+  margin: 18px;
+  top: 0px;
+  right: 0px;
+  position: absolute;
+}
+
 
 .map-container .info p.status {
   /* font-family: "Helvetica Neue",Helvetica,Arial,sans-serif; */
