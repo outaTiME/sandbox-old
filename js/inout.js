@@ -119,14 +119,15 @@ function initialize(data) {
       console.info('No data...');
       $('section#welcome').show();
       // update save button with done ..
-      $('#btn-save').hide();
-      $('#btn-done').show();
+      // $('#btn-save').hide();
+      // $('#btn-done').show();
       // we must to configure the viewport ...
+
     } else {
       console.info('Yay, we got some data...');
       $("form :input:visible:enabled:first").select().focus();
-      $('#btn-save').show();
-      $('#btn-done').hide();
+      // $('#btn-save').show();
+      // $('#btn-done').hide();
     }
   }
 
@@ -153,20 +154,58 @@ function initialize(data) {
     shared_polygon.setPath(clone);
   }
 
+  /** Manage polygon events. **/
+  function managePolygon(polygon) {
+    polygon = polygon || new google.maps.Polygon({
+      paths: triangleCoords,
+      strokeColor: "#FF0000",
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: "#FF0000",
+      fillOpacity: 0.35,
+      editable: true
+    });
+    polygon.setMap(map_bounds);
+    google.maps.event.addListener(polygon.getPath(), 'insert_at', function (evt) {
+      console.info('Vertex inserted.');
+      updateBounds(this);
+    });
+    google.maps.event.addListener(polygon.getPath(), 'remove_at', function (evt) {
+      console.info('Vertex removed.');
+      updateBounds(this);
+    });
+    google.maps.event.addListener(polygon.getPath(), 'set_at', function (evt) {
+      console.info('Vertex moved.');
+      updateBounds(this);
+    });
+    google.maps.event.addListener(polygon, 'rightclick', function (mev) {
+      if (mev.vertex !== null) {
+        // console.info('Right click event at polygon. Vertex: %i', mev.vertex);
+        polygon.getPath().removeAt(mev.vertex);
+      }
+    });
+  }
+
   /** Initialize bounds map. */
-  function initializeBoundsMap() {
+  function initializeBoundsMap(pos) {
+    var
+      newViewport = !!pos,
+      center = newViewport ? new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude) : bounds.getCenter();
     map_bounds = new google.maps.Map(document.getElementById('map-bounds'), {
       zoom: 10,
-      center: bounds.getCenter(),
+      center: center,
       mapTypeId: google.maps.MapTypeId.ROADMAP,
       disableDefaultUI: true,
       zoomControl: true /*,
       minZoom: 2 */
     });
-    map_bounds.fitBounds(bounds);
+
     var polyOptions = {
-      strokeWeight: 0,
-      fillOpacity: 0.45,
+      strokeColor: "#FF0000",
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: "#FF0000",
+      fillOpacity: 0.35,
       editable: true
     };
     var drawingManager = new google.maps.drawing.DrawingManager({
@@ -181,34 +220,28 @@ function initialize(data) {
       polygonOptions: polyOptions,
       map: map_bounds
     });
-    var polygon = new google.maps.Polygon({
-      paths: triangleCoords,
-      strokeColor: "#FF0000",
-      strokeOpacity: 0.8,
-      strokeWeight: 2,
-      fillColor: "#FF0000",
-      fillOpacity: 0.35,
-      editable: true
-    });
-    polygon.setMap(map_bounds);
-    google.maps.event.addListener(polygon.getPath(), 'insert_at', function (evt) {
-      // console.info('Vertex inserted.');
-      updateBounds(this);
-    });
-    google.maps.event.addListener(polygon.getPath(), 'remove_at', function (evt) {
-      // console.info('Vertex removed.');
-      updateBounds(this);
-    });
-    google.maps.event.addListener(polygon.getPath(), 'set_at', function (evt) {
-      // console.info('Vertex moved.');
-      updateBounds(this);
-    });
-    google.maps.event.addListener(polygon, 'rightclick', function (mev) {
-      if (mev.vertex !== null) {
-        // console.info('Right click event at polygon. Vertex: %i', mev.vertex);
-        polygon.getPath().removeAt(mev.vertex);
-      }
-    });
+    // check for new viewport ...
+    if (newViewport) {
+      // set drawing mode
+      drawingManager.setOptions({
+        drawingMode: google.maps.drawing.OverlayType.POLYGON
+      });
+      // listeners
+      var listener = google.maps.event.addListener(drawingManager, 'polygoncomplete', function (polygon) {
+        // console.debug('polygon', this === completeListener);
+        managePolygon(polygon);
+        drawingManager.setOptions({
+          drawingMode: null
+        });
+        google.maps.event.removeListener(listener);
+        updateBounds(polygon.getPath());
+        map_bounds.fitBounds(bounds);
+        $('section#welcome').hide();
+      });
+    } else {
+      managePolygon();
+      map_bounds.fitBounds(bounds);
+    }
   }
 
   /** Save bounds. **/
@@ -364,7 +397,8 @@ function initialize(data) {
     });
 
     $("body").on("click", "#btn-back", function (event) {
-      if (triangleCoords.length === 0) {
+      var path = shared_polygon.getPath();
+      if (!path || path.getLength() === 0) {
         console.info('No data...');
         gotoWelcome();
       } else {
@@ -378,7 +412,10 @@ function initialize(data) {
     });
 
     $("body").on("click", "#btn-done", function (event) {
-      save(gotoPlaceLocator);
+      save(function () {
+        $('section#welcome').hide();
+        gotoPlaceLocator();
+      });
     });
 
     $("body").on("click", ".nav-tabs a[data-toggle='tab']", function (event) {
@@ -392,14 +429,24 @@ function initialize(data) {
             4
           );
           map_bounds_size = true;
-          // initialize map
-          initializeBoundsMap();
+          // with data ??
+          if (triangleCoords.length === 0) {
+            navigator.geolocation.watchPosition(function (pos) {
+              initializeBoundsMap(pos);
+            });
+          } else  {
+            initializeBoundsMap();
+          }
         }
-        google.maps.event.trigger(map_bounds, 'resize');
+        if (map_bounds) {
+          console.debug('We got map_bounds, resize event fired ...');
+          google.maps.event.trigger(map_bounds, 'resize');
+        }
       } else {
         google.maps.event.trigger(map, 'resize');
+        // FIXME: [outaTiME] if first search place focus ...
         // dispatch back action ...
-        $("#btn-back").trigger('click');
+        // $("#btn-back").trigger('click');
       }
     });
 
@@ -436,7 +483,7 @@ function initialize(data) {
       $("#view .page-header").outerHeight() - 18 -
       // $("#view .alert").outerHeight() - 18 -
       // $("#view #btn-back").outerHeight() - 18 -
-      4
+      6
     );
     /** Parse input data. **/
     var d_bounds = data;
@@ -472,7 +519,7 @@ function initialize(data) {
 
     // map.fitBounds(bounds);
     shared_polygon = new google.maps.Polygon({
-      paths: triangleCoords,
+      paths: triangleCoords || [],
       strokeColor: "#0000FF",
       strokeOpacity: 0.6,
       strokeWeight: 2,

@@ -27,6 +27,7 @@ module.exports = function (grunt) {
       inout: [
         'js/jquery.easing.1.3.js',
         'js/jquery.scrollTo-1.4.2-min.js',
+        'js/geolocation.js',
         'js/inout.js'
       ],
       logs: [
