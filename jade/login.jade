@@ -13,9 +13,12 @@ append box
   .login
     h2 Log In
     hr.soften
+    - if (!debug)
+      .alert.alert-info
+        strong Heads up!&nbsp;
+        | For demo purposes user was '#{demo_user}' with '#{demo_password}' password.
     - if ('' !== errorClass)
       .alert.alert-error
-        //-a.close(data-dismiss="alert") x
         strong Oh snap!&nbsp;
         | Error found while trying to authenticate user.
     form(action="/login", method='POST')

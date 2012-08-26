@@ -6,7 +6,6 @@
 * Copyright (c) 2012 outaTiME, Inc.
 */
 
-
 var
 
   // dependencies
@@ -31,10 +30,10 @@ var
   app = module.exports = express.createServer(),
 
   /** Default login field value. **/
-  login_value = "afalduto@gmail.com",
+  login_value = "user@mail.com",
 
   /** Default password field value. **/
-  password_value = "stunt688",
+  password_value = "demo",
 
   /** Get value only if running app in development mode, if not return empty (used by helpers). **/
   getEnvironmentValue = function (value, empty) {
@@ -253,7 +252,9 @@ app.helpers({
   },
   year: moment().year(),
   debug: app.settings.env === "development",
-  version: pkg.version
+  version: pkg.version,
+  demo_user: login_value,
+  demo_password: password_value
 });
 
 app.dynamicHelpers({
@@ -345,8 +346,9 @@ app.get('/inout/address', [checkAuth], function (req, res, next) {
         if (err1) {
           return next(err1);
         }
-        var result = JSON.parse(body);
-        // log response ...
+        var result = JSON.parse(body), status = result.status;
+        // check response ...
+        // status !== "OVER_QUERY_LIMIT"
         _log(doc, 'inout', 'GET', 'address', keywords, result);
         console.info("Address result for: %j. %j", {keywords: keywords, bounds: bounds}, result);
         // send response
@@ -409,56 +411,19 @@ app.get('/logs', [checkAuth], function (req, res, next) {
 
 /** services only at dev mode **/
 
-app.get('/fixtures/reset', [checkDevelopmentMode], function (req, res, next) {
-  var test_bounds = [{
-    points: [
-      {
-        lat: -43.26519102639606,
-        lng: -65.38240830126955
-      },
-      {
-        lat: -43.29753940849775,
-        lng: -65.28676429003906
-      },
-      {
-        lat: -43.26099753659681,
-        lng: -65.23561389794924
-      },
-      {
-        lat: -43.21983026907506,
-        lng: -65.29466776074219
-      },
-      {
-        lat: -43.237691354803474,
-        lng: -65.32419586669914
-      },
-      {
-        lat: -43.246938002453014,
-        lng: -65.38343826953127
-      }
-    ]
-  }];
+app.get('/fixtures/create', [checkDevelopmentMode], function (req, res, next) {
   // find user id
   UserModel
-    .findOne({email: req.query.username || 'afalduto@gmail.com'})
+    .findOne({email: req.query.username || login_value})
     .exec(function (err, doc) {
       if (err) {
         return next(err);
       }
       if (!doc) {
-        // exist
         console.info('New user...');
-        // create
-        /*
         var user = new UserModel({
-          email: "afalduto@gmail.com",
-          password: "foo1234",
-          bounds: test_bounds
-        });
-        */
-        var user = new UserModel({
-          email: "afalduto@gmail.com",
-          password: "foo1234"
+          email: login_value,
+          password: password_value
         });
         user.save(function (err1) {
           if (err1) {
@@ -467,17 +432,8 @@ app.get('/fixtures/reset', [checkDevelopmentMode], function (req, res, next) {
           res.json(user);
         });
       } else {
-        // new
         console.info('User exists...');
-        // edit
-        // doc.bounds = [];
-        doc.bounds = test_bounds;
-        doc.save(function (err2) {
-          if (err2) {
-            return next(err2);
-          }
-          res.json(doc);
-        });
+        res.json(doc);
       }
     });
 });

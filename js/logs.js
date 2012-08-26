@@ -3,7 +3,8 @@ $(function () {
   var oTable = $('#logs').dataTable({
     "bScrollInfinite": true,
     "bScrollCollapse": true,
-    "sScrollY": "429px",
+    "sScrollY": "433px",
+    // "sScrollY": "500px",
     // "sScrollX": "100%",
     "bPaginate": false,
     "bFilter": false,
