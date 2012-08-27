@@ -23,7 +23,7 @@ var
   moment = require('moment'),
   pkg = require('package')(this),
 
-  /** Yay, out application name. */
+  /** Aapplication name. */
   app_name = "Sandbox",
 
   /** Create Server. **/
@@ -45,7 +45,7 @@ var
 
   /** Check auth method, used in each express request. */
   checkAuth = function (req, res, next) {
-    console.log('Check authentication...');
+    // console.log('Check authentication...');
     if (req.loggedIn) {
       next();
     } else {
@@ -62,17 +62,27 @@ var
 
   /** Check if app running in development mode, only for especial methods. */
   checkDevelopmentMode = function (req, res, next) {
-    console.log('Check for development mode authentication...');
+    // console.log('Check for development mode authentication...');
     if (!isProduction()) {
       // yay, valid execution
       return next();
     }
   },
 
-  /** Get user from context. **/
-  getUser = function (req) {
-    return req.user.email || req.query.username || req.body.username || 'user@mail.com';
+  /** Get email user from context. **/
+  getUserEmail = function (req) {
+    return req.user.email || req.query.username || req.body.username || login_value;
+  },
+
+  /** Get mixed value, if JSON return JSON otherwise return parameter value. **/
+  getMixedValue = function (value) {
+    try {
+      return JSON.parse(value);
+    } catch (e) {
+      return value;
+    }
   };
+
 
 /** Model **/
 
@@ -230,7 +240,9 @@ app.configure(function () {
     layout: false
   });
   app.use(express.cookieParser());
-  app.use(express.session({ secret: '29jYP87V!=HE06}q:Yv-Lbm/8Vs}7n' }));
+  app.use(express.session({
+    secret: '29jYP87V!=HE06}q:Yv-Lbm/8Vs}7n'
+  }));
   app.use(express.bodyParser());
   app.use(everyauth.middleware());
   app.use(express.methodOverride());
@@ -238,8 +250,6 @@ app.configure(function () {
 });
 
 // helpers
-
-// everyauth.helpExpress(app);
 
 app.helpers({
   loginFormFieldValue: getEnvironmentValue(login_value),
@@ -265,8 +275,6 @@ app.dynamicHelpers({
 
 /** services **/
 
-// app.all('*', checkAuth);
-
 function _log(user, module, verb, action, query, response) {
   // create log
   new LogModel({
@@ -281,9 +289,24 @@ function _log(user, module, verb, action, query, response) {
 
 /** Services. **/
 
+app.post('/log', [checkAuth], function (req, res, next) {
+  // get user
+  var user = getUserEmail(req);
+  console.info("Saving log for: %s. %j", user, req.body);
+  _log(
+    req.user,
+    req.body.module,
+    req.body.verb,
+    req.body.action,
+    getMixedValue(req.body.query),
+    getMixedValue(req.body.result)
+  );
+  res.send(200);
+});
+
 app.get('/inout/bounds', [checkAuth], function (req, res, next) {
   // get user
-  var user = getUser(req);
+  var user = getUserEmail(req);
   // find user id
   UserModel
     .findOne({email: user}, ['bounds'])
@@ -300,11 +323,9 @@ app.get('/inout/bounds', [checkAuth], function (req, res, next) {
   });
 });
 
-
-
 app.post('/inout/bounds', [checkAuth], function (req, res, next) {
   // get user
-  var user = getUser(req);
+  var user = getUserEmail(req);
   console.info("Saving bounds for: %s. %j", user, req.body.bounds);
   // find user id
   UserModel
@@ -324,42 +345,6 @@ app.post('/inout/bounds', [checkAuth], function (req, res, next) {
   });
 });
 
-app.get('/inout/address', [checkAuth], function (req, res, next) {
-  var keywords = req.query.keywords, bounds = req.query.bounds, user = getUser(req),
-    client = require('request');
-  console.info("Searching address: %s at: %s for user: %s", keywords, bounds, user);
-  // find user id
-  UserModel
-    .findOne({email: user})
-    .exec(function (err, doc) {
-    if (err) {
-      return next(err);
-    }
-    if (doc) {
-      client.get({
-        url: 'http://maps.googleapis.com/maps/api/geocode/json?address=' + encodeURIComponent(keywords) +
-          '&bounds=' + bounds + '&region=ar&language=es&sensor=false',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }, function (err1, response, body) {
-        if (err1) {
-          return next(err1);
-        }
-        var result = JSON.parse(body), status = result.status;
-        // check response ...
-        // status !== "OVER_QUERY_LIMIT"
-        _log(doc, 'inout', 'GET', 'address', keywords, result);
-        console.info("Address result for: %j. %j", {keywords: keywords, bounds: bounds}, result);
-        // send response
-        res.json(result);
-      });
-    } else {
-      res.send(500);
-    }
-  });
-});
-
 /** Pages. **/
 
 app.get('/', [checkAuth], function (req, res, next) {
@@ -371,7 +356,7 @@ app.get('/', [checkAuth], function (req, res, next) {
 
 app.get('/inout', [checkAuth], function (req, res, next) {
   // get user
-  var user = getUser(req);
+  var user = getUserEmail(req);
   // find user id
   UserModel
     .findOne({email: user}, ['bounds'])
@@ -385,12 +370,10 @@ app.get('/inout', [checkAuth], function (req, res, next) {
       res.render('inout', {
         bounds: JSON.stringify(doc.bounds)
       });
-
     } else {
       res.send(500);
     }
   });
-
 });
 
 app.get('/logs', [checkAuth], function (req, res, next) {

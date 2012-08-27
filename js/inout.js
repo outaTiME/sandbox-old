@@ -96,14 +96,14 @@ function initialize(data) {
     var prevSection = _section;
     section = section || _section || "section#place_locator";
     callback = callback || $.noop;
-    console.debug("visibility: 'visible' for section: %s", section);
+    // console.debug("visibility: 'visible' for section: %s", section);
     $(section).css({visibility: "visible"});
     $(".tab-pane.active").scrollTo(section, 400, {
       easing: 'easeOutExpo',
       onAfter: function () {
         callback();
         if (prevSection && prevSection !== section) {
-          console.debug("visibility: 'hidden' for section: %s", prevSection);
+          // console.debug("visibility: 'hidden' for section: %s", prevSection);
           $(prevSection).css({visibility: "hidden"});
         }
       }
@@ -128,10 +128,10 @@ function initialize(data) {
   /** Handle data from service. **/
   function handleData(data) {
     if (data.length === 0) {
-      console.info('No data...');
+      // console.info('No data...');
       $('section#welcome').show();
     } else {
-      console.info('Yay, we got some data...');
+      // console.info('Yay, we got some data...');
       gotoPlaceLocator();
     }
   }
@@ -179,15 +179,15 @@ function initialize(data) {
     });
     polygon.setMap(map_bounds);
     google.maps.event.addListener(polygon.getPath(), 'insert_at', function (evt) {
-      console.info('Vertex inserted.');
+      // console.info('Vertex inserted.');
       updateBounds(this);
     });
     google.maps.event.addListener(polygon.getPath(), 'remove_at', function (evt) {
-      console.info('Vertex removed.');
+      // console.info('Vertex removed.');
       updateBounds(this);
     });
     google.maps.event.addListener(polygon.getPath(), 'set_at', function (evt) {
-      console.info('Vertex moved.');
+      // console.info('Vertex moved.');
       updateBounds(this);
     });
     google.maps.event.addListener(polygon, 'rightclick', function (mev) {
@@ -295,6 +295,31 @@ function initialize(data) {
     });
   }
 
+  /** Log **/
+  function trace(verb, action, query, result) {
+    $.ajax({
+      type: "POST",
+      url: '/log',
+      dataType: "json",
+      data: {
+        module: 'inout',
+        verb: verb,
+        action: action,
+        query: JSON.stringify(query),
+        result: JSON.stringify(result)
+      },
+      error: function (xhr, status) {
+        // console.error(status);
+      },
+      success: function (data, textStatus, jqXHR) {
+        // console.info('Bsounds saved!', data);
+      },
+      complete: function (jqXHR, textStatus) {
+        // send and forget
+      }
+    });
+  }
+
   /** Navigation **/
 
   function gotoWelcome() {
@@ -321,79 +346,78 @@ function initialize(data) {
       block();
       // blur
       $("form :input:visible:enabled:first").blur();
-      var area = $("form .area"), button = $("form button"), keywords = $("#search #keywords");
-      $.ajax({
-        type: "GET",
-        url: '/inout/address',
-        // dataType: "json",
-        data: {
-          keywords: keywords.val(),
-          bounds: bounds.getNorthEast().lat() + "," + bounds.getNorthEast().lng() + "|" +
-            bounds.getSouthWest().lat() + "," + bounds.getSouthWest().lng()
+      var area = $("form .area"), button = $("form button"), keywords = $("#search #keywords"),
+        geocoder = new google.maps.Geocoder();
+      geocoder.geocode(
+        {
+          address: keywords.val(),
+          // latLng: bounds.getCenter(),
+          bounds: bounds
         },
-        error: function (xhr, status) {
-          // console.error(status);
-        },
-        success: function (data, textStatus, jqXHR) {
-          // console.info('Yay, data: %o', data);
-          var results = data.results;
-          for (var i = 0; i < results.length; i++) {
-            var result = results[i], type = result.types[0];
-            // if (type === "street_address" || type === "route") {
-            var coords = result.geometry.location, pos = new google.maps.LatLng(coords.lat, coords.lng),
-              icon_elem = $("section#view .page-header i"), title_elem = $("section#view .page-header span"),
-              map_elem = $("section#view #map"), map_container_elem = $(".map-container");
-            if (marker) {
-              marker.setPosition(pos);
-            } else {
-              marker = new google.maps.Marker({
-                position: pos,
-                map: map,
-                clickable: false
-              });
-            }
-            // update title
-            title_elem.text(data.results[0].formatted_address);
-            // title_elem.textOverflow();
-            var contains = shared_polygon.containsLatLng(pos);
-            // attach classes
-            inoutClass(icon_elem, contains);
-            inoutClass(title_elem, contains);
-            inoutClass(map_elem, contains);
-            // hide
-            $(".inside, .outside", map_container_elem).hide();
-            // bounds management
-            if (contains) {
-              // green
-              map.setCenter(pos);
-              map.setZoom(16);
-              // show
-              $(".inside", map_container_elem).show();
-            } else {
-              // red
-              var bounds_ext = new google.maps.LatLngBounds(bounds.getSouthWest(), bounds.getNorthEast());
-              bounds_ext.extend(pos);
-              var distance = google.maps.geometry.spherical.computeDistanceBetween(bounds.getCenter(), pos) / 1000;
-              // show
-              var outside = $(".outside", map_container_elem);
-              $("p.small", outside).text(distance.toFixed(1) + "kms away");
-              outside.show();
-              if (distance > 1500) {
-                map.setZoom(6);
-                map.setCenter(pos);
+        function (data, status) {
+          // trace response
+          trace('GET', 'address', keywords.val(), data);
+          if (status === google.maps.GeocoderStatus.OK) {
+            // console.info('Yay, data: %o', data);
+            var results = data;
+            for (var i = 0; i < results.length; i++) {
+              var result = results[i], type = result.types[0];
+              // if (type === "street_address" || type === "route") {
+              var coords = result.geometry.location, pos = new google.maps.LatLng(coords.lat(), coords.lng()),
+                icon_elem = $("section#view .page-header i"), title_elem = $("section#view .page-header span"),
+                map_elem = $("section#view #map"), map_container_elem = $(".map-container");
+              if (marker) {
+                marker.setPosition(pos);
               } else {
-                map.fitBounds(bounds_ext);
-                // our center point was pos
-                map.setCenter(pos);
+                marker = new google.maps.Marker({
+                  position: pos,
+                  map: map,
+                  clickable: false
+                });
               }
+              // update title
+              title_elem.text(result.formatted_address);
+              // title_elem.textOverflow();
+              var contains = shared_polygon.containsLatLng(pos);
+              // attach classes
+              inoutClass(icon_elem, contains);
+              inoutClass(title_elem, contains);
+              inoutClass(map_elem, contains);
+              // hide
+              $(".inside, .outside", map_container_elem).hide();
+              // bounds management
+              if (contains) {
+                // green
+                map.setCenter(pos);
+                map.setZoom(16);
+                // show
+                $(".inside", map_container_elem).show();
+              } else {
+                // red
+                var bounds_ext = new google.maps.LatLngBounds(bounds.getSouthWest(), bounds.getNorthEast());
+                bounds_ext.extend(pos);
+                var distance = google.maps.geometry.spherical.computeDistanceBetween(bounds.getCenter(), pos) / 1000;
+                // show
+                var outside = $(".outside", map_container_elem);
+                $("p.small", outside).text(distance.toFixed(1) + "kms away");
+                outside.show();
+                if (distance > 1500) {
+                  map.setZoom(6);
+                  map.setCenter(pos);
+                } else {
+                  map.fitBounds(bounds_ext);
+                  // our center point was pos
+                  map.setCenter(pos);
+                }
+              }
+              unblock();
+              // go to map ...
+              scrollHelper("section#view");
+              // mark
+              found = true;
+              break;
+              // }
             }
-            unblock();
-            // go to map ...
-            scrollHelper("section#view");
-            // mark
-            found = true;
-            break;
-            // }
           }
           // not found ...
           if (found === false) {
@@ -401,11 +425,9 @@ function initialize(data) {
             $("form .control-group").addClass("error");
             $("form :input:visible:enabled:first").select().focus();
           }
-        } /*,
-        complete: function (jqXHR, textStatus) {
-          unblock();
-        } */
-      });
+        }
+      );
+
     });
 
     $("body").on("click", "#btn-welcome", function (event) {
@@ -415,10 +437,10 @@ function initialize(data) {
     $("body").on("click", "#btn-back", function (event) {
       var path = shared_polygon.getPath();
       if (!path || path.getLength() === 0) {
-        console.info('No data...');
+        // console.info('No data...');
         gotoWelcome();
       } else {
-        console.info('Yay, we got some data...');
+        // console.info('Yay, we got some data...');
         gotoPlaceLocator();
       }
     });
@@ -453,7 +475,7 @@ function initialize(data) {
           }
         }
         if (map_bounds) {
-          console.debug('We got map_bounds, resize event fired ...');
+          // console.debug('We got map_bounds, resize event fired ...');
           google.maps.event.trigger(map_bounds, 'resize');
         }
       } else {
@@ -474,23 +496,8 @@ function initialize(data) {
   /** Layout **/
 
   (function () {
-    var a = $(window), c = $("#box");
-    if (!Modernizr.flexbox && !Modernizr['flexbox-legacy']) {
-      var d = c.closest(".container");
-      c.bind("center", function () {
-        var e = a.height() - d.height(), f = Math.floor(e / 2);
-        if (f > 0) {
-          d.css({marginTop: f});
-        }
-      }).trigger("center");
-      a.resize(function () {
-        $.doTimeout('resize', 250, function () {
-          c.trigger("center");
-        });
-      });
-    }
     checkLocationSize('view');
-    a.resize(function () {
+    $(window).resize(function () {
       $.doTimeout('resize', 250, function () {
         // map size changed ??
         checkLocationSize('view');
@@ -500,8 +507,6 @@ function initialize(data) {
     $("#map").height(
       $("#1").outerHeight() -
       $("section#view .page-header").outerHeight() - 18 -
-      // $("section#view .alert").outerHeight() - 18 -
-      // $("section#view #btn-back").outerHeight() - 18 -
       6
     );
     /** Parse input data. **/
