@@ -13,31 +13,46 @@ append box
   table#logs(cellpadding="0", cellspacing="0", border="0", width="100%")
     thead
       tr
-        //
-          th User
+        th User
         th Time
         th Module
-        th Action
-        th Query
         th(style="text-align: center;") Verb
+        th Action
+        th(style="text-align: center;") Query
         th(style="text-align: center;") Response
     tbody
       each log, i in logs
         tr
-          //
-            td #{log._user.email}
+          td
+            - if (log._user)
+              | #{log._user.email}
+            - else
+              | Anonymous
           td
             span(data-livestamp=m_timestamp(log.created))
           td #{log.module}
-          td #{log.action}
-          td #{log.query}
           td(style="text-align: center;") #{log.verb}
+          td #{log.action}
           td(style="text-align: center;")
-            - if (log.response)
-              a(data-toggle="modal", href="#" + log._id)
+            - if (log.query)
+              a(data-toggle="modal", href="#query-" + log._id)
                 i.icon-share
               //
-              div.modal.hide(id=log._id)
+              div.modal.hide(id="query-" + log._id)
+                div(class="modal-header")
+                  button(type="button", class="close", data-dismiss="modal") ×
+                  h3 Query
+                div.modal-body
+                  pre
+                    code(class="json") #{JSON.stringify(log.query, null, '  ')}
+                div.modal-footer
+                  a.btn(href="#", data-dismiss="modal") Close
+          td(style="text-align: center;")
+            - if (log.response)
+              a(data-toggle="modal", href="#response-" + log._id)
+                i.icon-share
+              //
+              div.modal.hide(id="response-" + log._id)
                 div(class="modal-header")
                   button(type="button", class="close", data-dismiss="modal") ×
                   h3 Response

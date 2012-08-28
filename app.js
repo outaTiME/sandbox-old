@@ -142,7 +142,10 @@ var Log = new Schema({
     type: ObjectId,
     ref: 'User'
   },
-  module: String,
+  module: {
+    type: String,
+    required: true
+  },
   verb: {
     type: String,
     required: true,
@@ -279,7 +282,7 @@ app.dynamicHelpers({
 function _log(user, module, verb, action, query, response) {
   // create log
   new LogModel({
-    _user: user._id,
+    _user: !!user ? user._id : null,
     module: module,
     verb: verb,
     action: action,
@@ -426,8 +429,17 @@ app.get('/usig/geocode', [], function (req, res, next) {
             return next(err1);
           }
           var result = body1, code = (result.tipo_resultado || "").toUpperCase();
-          console.log(result);
+          // trace
+          _log(
+            req.user,
+            'usig',
+            'GET',
+            'geocode',
+            req.query,
+            body1
+          );
           if (code === "OK") {
+            // result
             res.json(body1.resultado);
           } else {
             res.send(500);

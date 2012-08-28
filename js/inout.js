@@ -347,16 +347,16 @@ function initialize(data) {
       // blur
       $("form :input:visible:enabled:first").blur();
       var area = $("form .area"), button = $("form button"), keywords = $("#search #keywords"),
-        geocoder = new google.maps.Geocoder();
-      geocoder.geocode(
-        {
+        geocoder = new google.maps.Geocoder(), qs = {
           address: keywords.val(),
           // latLng: bounds.getCenter(),
           bounds: bounds
-        },
+        };
+      geocoder.geocode(
+        qs,
         function (data, status) {
           // trace response
-          trace('GET', 'address', keywords.val(), data);
+          trace('GET', 'address', qs, data);
           if (status === google.maps.GeocoderStatus.OK) {
             // console.info('Yay, data: %o', data);
             var results = data;
