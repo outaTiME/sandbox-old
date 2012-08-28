@@ -22,6 +22,7 @@ var
   // utils
   moment = require('moment'),
   pkg = require('package')(this),
+  request = require('request'),
 
   /** Aapplication name. */
   app_name = "Sandbox",
@@ -390,6 +391,51 @@ app.get('/logs', [checkAuth], function (req, res, next) {
         logs: logs
       });
     });
+});
+
+app.get('/usig', [checkAuth], function (req, res, next) {
+  res.render('usig', {
+  });
+});
+
+/** public **/
+
+/** Return geocode from qs, using: http://ws.usig.buenosaires.gob.ar/geocoder/2.2. **/
+app.get('/usig/geocode', [], function (req, res, next) {
+  // geocode
+  request(
+    {
+      method: 'GET',
+      uri: 'http://ws.usig.buenosaires.gob.ar/geocoder/2.2/geocoding',
+      qs: req.query
+    },
+    function (err, response, body) {
+      if (err) {
+        return next(err);
+      }
+      // convert coords
+      request(
+        {
+          method: 'GET',
+          uri: 'http://ws.usig.buenosaires.gob.ar/rest/convertir_coordenadas?output=lonlat',
+          qs: JSON.parse(body.match(/\((.*)\)/)[1]),
+          json: true
+        },
+        function (err1, response1, body1) {
+          if (err1) {
+            return next(err1);
+          }
+          var result = body1, code = (result.tipo_resultado || "").toUpperCase();
+          console.log(result);
+          if (code === "OK") {
+            res.json(body1.resultado);
+          } else {
+            res.send(500);
+          }
+        }
+      );
+    }
+  );
 });
 
 /** services only at dev mode **/

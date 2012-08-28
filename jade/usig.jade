@@ -1,0 +1,20 @@
+extends box
+
+block title
+  title Usig (GeoCode) &#8212; Sandbox
+
+append styles
+  link(rel="stylesheet", href="/css/usig.css")
+
+append scripts
+  script(src="http://servicios.usig.buenosaires.gob.ar/nd-js/1.1/normalizadorDirecciones.min.js")
+  script(src="http://servicios.usig.buenosaires.gov.ar/usig-js/2.2/usig.GeoCoder.min.js")
+  script(src="http://maps.googleapis.com/maps/api/js?sensor=false&language=es&region=AR")
+  script(src="/js/usig" + (debug === true ? ".js" : ".min.js"))
+  script
+    $(function () {
+      // pass
+    });
+
+append box
+  #map_canvas

@@ -26,7 +26,7 @@ module.exports = function (grunt) {
       ],
       inout: [
         'js/jquery.easing.1.3.js',
-        'js/jquery.scrollTo-1.4.2-min.js',
+        'js/jquery.scrollTo-min.js',
         'js/geolocation.js',
         'js/inout.js'
       ],
@@ -36,6 +36,9 @@ module.exports = function (grunt) {
         'js/livestamp.min.js',
         'js/highlight.pack.js',
         'js/logs.js'
+      ],
+      usig: [
+        'js/usig.js'
       ]
     },
     lint: {
@@ -44,7 +47,8 @@ module.exports = function (grunt) {
       // modules
       login: ['js/login.js'],
       inout: ['js/inout.js'],
-      logs: ['js/logs.js']
+      logs: ['js/logs.js'],
+      usig: ['js/usig.js']
     },
     concat: {
       sandbox: {
@@ -64,6 +68,10 @@ module.exports = function (grunt) {
       logs: {
         src: ['<config:files.logs>'],
         dest: 'public/js/logs.js'
+      },
+      usig: {
+        src: ['<config:files.usig>'],
+        dest: 'public/js/usig.js'
       }
     },
     min: {
@@ -84,6 +92,10 @@ module.exports = function (grunt) {
       logs: {
         src: ['<banner:meta.banner>', '<config:files.logs>'],
         dest: 'public/js/logs.min.js'
+      },
+      usig: {
+        src: ['<banner:meta.banner>', '<config:files.usig>'],
+        dest: 'public/js/usig.min.js'
       }
     },
     recess: {
@@ -120,6 +132,14 @@ module.exports = function (grunt) {
           compile: true,
           compress: true
         }
+      },
+      usig: {
+        src: ['less/usig.less'],
+        dest: 'public/css/usig.css',
+        options: {
+          compile: true,
+          compress: true
+        }
       }
     },
     replace: {
@@ -138,7 +158,8 @@ module.exports = function (grunt) {
           '<config:recess.sandbox.src>',
           '<config:recess.login.src>',
           '<config:recess.inout.src>',
-          '<config:recess.logs.src>'
+          '<config:recess.logs.src>',
+          '<config:recess.usig.src>'
         ],
         tasks: 'recess growl:rebuild'
       },
@@ -147,7 +168,8 @@ module.exports = function (grunt) {
           '<config:files.sandbox>',
           '<config:files.login>',
           '<config:files.inout>',
-          '<config:files.logs>'
+          '<config:files.logs>',
+          '<config:files.usig>'
         ],
         tasks: 'lint concat growl:rebuild'
       }
@@ -197,7 +219,7 @@ module.exports = function (grunt) {
         "latedef"       : true,   // Prohibit variable use before definition.
         "loopfunc"      : false,  // Allow functions to be defined within loops.
         "noarg"         : true,   // Prohibit use of `arguments.caller` and `arguments.callee`.
-        "regexp"        : true,   // Prohibit `.` and `[^...]` in regular expressions.
+        "regexp"        : false,   // Prohibit `.` and `[^...]` in regular expressions.
         "regexdash"     : false,  // Tolerate unescaped last dash i.e. `[-...]`.
         "scripturl"     : true,   // Tolerate script-targeted URLs.
         "shadow"        : false,  // Allows re-define variables later in code e.g. `var x=1; x=2;`.
@@ -220,7 +242,8 @@ module.exports = function (grunt) {
         'Modernizr': true,
         'google': true,
         'Spinner': true,
-        'hljs': true
+        'hljs': true,
+        'usig': true
       }
     },
     replacer: {},
