@@ -42,7 +42,8 @@ module.exports = function (grunt) {
       ]
     },
     lint: {
-      sandbox: ['grunt.js', 'app.js', 'js/sandbox.js'],
+      app: ['grunt.js', 'app.js'],
+      sandbox: ['js/sandbox.js'],
 
       // modules
       login: ['js/login.js'],
@@ -172,6 +173,13 @@ module.exports = function (grunt) {
           '<config:files.usig>'
         ],
         tasks: 'lint concat growl:rebuild'
+      },
+      app: {
+        files: [
+          'grunt.js',
+          'app.js',
+        ],
+        tasks: 'lint:app'
       }
     },
     jshint: {
@@ -219,7 +227,7 @@ module.exports = function (grunt) {
         "latedef"       : true,   // Prohibit variable use before definition.
         "loopfunc"      : false,  // Allow functions to be defined within loops.
         "noarg"         : true,   // Prohibit use of `arguments.caller` and `arguments.callee`.
-        "regexp"        : false,   // Prohibit `.` and `[^...]` in regular expressions.
+        "regexp"        : false,  // Prohibit `.` and `[^...]` in regular expressions.
         "regexdash"     : false,  // Tolerate unescaped last dash i.e. `[-...]`.
         "scripturl"     : true,   // Tolerate script-targeted URLs.
         "shadow"        : false,  // Allows re-define variables later in code e.g. `var x=1; x=2;`.

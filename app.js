@@ -23,6 +23,8 @@ var
   moment = require('moment'),
   pkg = require('package')(this),
   request = require('request'),
+  jsdom = require('jsdom'),
+  cheerio = require('cheerio'),
 
   /** Aapplication name. */
   app_name = "Sandbox",
@@ -386,6 +388,7 @@ app.get('/logs', [checkAuth], function (req, res, next) {
     .find({})
     .populate('_user', ['email'])
     .sort('created', -1)
+    .limit(100)
     .exec(function (err, logs) {
       if (err) {
         return next(err);
@@ -402,6 +405,107 @@ app.get('/usig', [checkAuth], function (req, res, next) {
 });
 
 /** public **/
+
+/** Return code of normalized street. **/
+app.get('/usig/normalize', [], function (req, res, next) {
+  res.render('usig', {
+    street: req.query.calle
+  });
+});
+
+app.get('/usig/test', [], function (req, res, next) {
+  // geocode
+
+  /*
+
+  var window = jsdom.jsdom().createWindow();
+
+  jsdom.env("http://sandbox.outa.im/", [
+    'http://code.jquery.com/jquery-1.4.2.min.js'
+  ],
+  function(errors, window) {
+    console.log(window.jQuery);
+  });
+
+  */
+  /*
+
+  jsdom.env('http://sandbox.outa.im/', [
+    'http://code.jquery.com/jquery-1.4.2.min.js',
+    'http://servicios.usig.buenosaires.gob.ar/nd-js/1.1/normalizadorDirecciones.min.js'
+  ],
+  function (errors, window) {
+    window.$(function () {
+      console.log('onReady #1');
+      var n = window.usig.NormalizadorDirecciones.init({
+        onReady: function () {
+          console.log('onReady #2');
+          try {
+            res.json(n.normalizar(req.query.calle, 10)[0].codigo);
+          } catch (error) {
+            // error
+            res.send(500);
+          }
+        }
+      });
+    });
+  });
+  */
+
+  /* var phantom = require('phantom');
+  phantom.create(function(ph) {
+    return ph.createPage(function(page) {
+      return page.open("http://localhost:' + (process.env.PORT || 3001) + '/usig/normalize?", function(status) {
+        console.log("opened google? ", status);
+        return page.evaluate((function() {
+          return document.title;
+        }), function(result) {
+          console.log('Page title is ' + result);
+          return ph.exit();
+        });
+      });
+    });
+  });
+
+
+  request(
+    {
+      method: 'GET',
+      uri: 'http://localhost:' + (process.env.PORT || 3001) + '/usig/normalize',
+      qs: {
+        calle: 'Santa Fe'
+      }
+    },
+    function (err, response, body) {
+      if (err) {
+        return next(err);
+      }
+      console.log(body);
+
+
+
+
+
+
+
+
+      var $ = cheerio.load(body)
+
+
+      var window = jsdom.jsdom(body).createWindow();
+      jsdom.jQueryify(window, 'http://code.jquery.com/jquery-1.4.2.min.js', function () {
+        var $ = window.$;
+        $('#normalized').bind('done', function () {
+          console.log('done event');
+          console.log($(this).text());
+        });
+      });
+    }
+  );
+
+  */
+
+});
 
 /** Return geocode from qs, using: http://ws.usig.buenosaires.gob.ar/geocoder/2.2. **/
 app.get('/usig/geocode', [], function (req, res, next) {

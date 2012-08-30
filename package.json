@@ -1,6 +1,6 @@
 {
   "name": "Sandbox",
-  "version": "0.9.9",
+  "version": "0.9.10",
   "description": "Sandbox project used for test purposes.",
   "homepage": "http://sandbox.outa.im",
   "keywords": ["sandbox", "outa", "outaTiME", "Ariel Falduto"],
@@ -24,7 +24,9 @@
     "package": "1.0.x",
     "bcrypt": "0.5.x",
     "everyauth": "0.x",
-    "request": "2.x"
+    "request": "2.x",
+    "jsdom": "0.2.x",
+    "cheerio": "0.9.x"
   },
   "devDependencies": {
     "grunt": ">=0.3.9",
