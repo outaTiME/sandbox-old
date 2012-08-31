@@ -28,8 +28,8 @@ append box
         a.dropdown-toggle(href="#", data-toggle="dropdown") User
           b.caret
         ul.dropdown-menu
-          li.disabled
-            a(href="#") Profile
+          li
+            a(href="#profile") Profile
           li.disabled
             a(href="#") Account Settings
           li.divider
@@ -105,3 +105,24 @@ append box
               #map-bounds
               button#btn-save.btn.btn-inverse(type="button") Save
 
+  #profile(style="display: none;")
+
+    div.tab-container
+
+      form.form-horizontal(style="text-align: left;")
+        legend Profile
+        .control-group
+          label.control-label(for="inputPassword") Password
+          .controls
+            input(type="password", id="inputPassword", placeholder="Password")
+        .control-group
+          label.control-label(for="inputPassword") New password
+          .controls
+            input(type="password", id="inputPassword", placeholder="Password")
+        .control-group
+          label.control-label(for="inputPassword") Retype
+          .controls
+            input(type="password", id="inputPassword", placeholder="Password")
+        .form-actions
+          button.btn.btn-primary(type="submit") Save changes
+          button.btn(type="button", style="margin-left: 20px;") Cancel
