@@ -351,6 +351,53 @@ app.post('/inout/bounds', [checkAuth], function (req, res, next) {
   });
 });
 
+app.post('/profile', [checkAuth], function (req, res, next) {
+  // get user
+  var user = getUserEmail(req);
+  console.info("Saving profile for: %s. %j", user, req.body);
+  // find user id
+  UserModel
+    .findOne({email: user})
+    .exec(function (err, user) {
+    if (err) {
+      res.send(500);
+    }
+    // check password
+    if (user) {
+      user.authenticate(req.body.pass_old, function (err1, auth) {
+        if (err1) {
+          res.send(500);
+        }
+        if (auth === true) {
+          // check same password
+          var pass_new = req.body.pass_new, pass_retry = req.body.pass_retry;
+          if (pass_new === pass_retry) {
+            user.setPassword(pass_new, function (err3) {
+              if (err3) {
+                res.send(500);
+              } else {
+                user.save(function (err4, doc) {
+                  if (err4) {
+                    res.send(500);
+                  } else {
+                    res.json({status: "success"});
+                  }
+                });
+              }
+            });
+          } else {
+            res.send(500);
+          }
+        } else {
+          res.send(500);
+        }
+      });
+    } else {
+      res.send(500);
+    }
+  });
+});
+
 /** Pages. **/
 
 app.get('/', [checkAuth], function (req, res, next) {

@@ -329,7 +329,7 @@ function initialize(data) {
   function gotoPlaceLocator(focus) {
     scrollHelper("section#place_locator", function () {
       if (focus !== false)  {
-        $("form :input:visible:enabled:first").select().focus();
+        $("form#search :input:visible:enabled:first").select().focus();
       }
     });
   }
@@ -338,14 +338,14 @@ function initialize(data) {
 
   (function () {
 
-    $("#home form").submit(function (e) {
+    $("#home form#search").submit(function (e) {
       var found = false;
       $("form .control-group").removeClass("error");
       // console.debug('Home form submit event...');
       e.preventDefault();
       block();
       // blur
-      $("form :input:visible:enabled:first").blur();
+      $("form#search :input:visible:enabled:first").blur();
       var area = $("form .area"), button = $("form button"), keywords = $("#search #keywords"),
         geocoder = new google.maps.Geocoder(), qs = {
           address: keywords.val(),
@@ -423,7 +423,7 @@ function initialize(data) {
           if (found === false) {
             unblock();
             $("form .control-group").addClass("error");
-            $("form :input:visible:enabled:first").select().focus();
+            $("form#search :input:visible:enabled:first").select().focus();
           }
         }
       );
@@ -489,6 +489,55 @@ function initialize(data) {
           }
         }
       }
+    });
+
+    $("body").on("click", "a#profile", function (event) {
+      $("div.tabbable").hide();
+      $("div#profile").show();
+      $("form#profile :input:visible:enabled:first").select().focus();
+      $("#home form#profile :input").val("");
+    });
+
+    $("body").on("click", "#home form#profile button#cancel", function (event) {
+      $("div#profile").hide();
+      $("div.tabbable").show();
+      if (_section === "section#place_locator") {
+        $("form#search :input:visible:enabled:first").select().focus();
+      }
+      $("#home form#profile :input").val("");
+    });
+
+    $("#home form#profile").submit(function (e) {
+      e.preventDefault();
+      block();
+      // blur
+      $("form#profile").blur();
+      $.ajax({
+        type: "POST",
+        url: '/profile',
+        dataType: "json",
+        data: {
+          pass_old: $("#home form#profile #pass_old").val(),
+          pass_new: $("#home form#profile #pass_new").val(),
+          pass_retry: $("#home form#profile #pass_retry").val()
+        },
+        error: function (xhr, status) {
+          // FIXME: [outaTiME] put error messages
+          $("form#profile :input:visible:enabled:first").select().focus();
+        },
+        success: function (data, textStatus, jqXHR) {
+          // FIXME: [outaTiME] reuse plz ...
+          $("div#profile").hide();
+          $("div.tabbable").show();
+          if (_section === "section#place_locator") {
+            $("form#search :input:visible:enabled:first").select().focus();
+          }
+          $("#home form#profile :input").val("");
+        },
+        complete: function (jqXHR, textStatus) {
+          unblock();
+        }
+      });
     });
 
   }());

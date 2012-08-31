@@ -29,7 +29,7 @@ append box
           b.caret
         ul.dropdown-menu
           li
-            a(href="#profile") Profile
+            a#profile(href="#") Profile
           li.disabled
             a(href="#") Account Settings
           li.divider
@@ -109,20 +109,20 @@ append box
 
     div.tab-container
 
-      form.form-horizontal(style="text-align: left;")
+      form#profile.form-horizontal(style="text-align: left;")
         legend Profile
         .control-group
-          label.control-label(for="inputPassword") Password
+          label.control-label(for="pass_old") Password
           .controls
-            input(type="password", id="inputPassword", placeholder="Password")
+            input(type="password", name="pass_old", id="pass_old", placeholder="Password")
         .control-group
-          label.control-label(for="inputPassword") New password
+          label.control-label(for="pass_new") New password
           .controls
-            input(type="password", id="inputPassword", placeholder="Password")
+            input(type="password", name="pass_new", id="pass_new", placeholder="Password")
         .control-group
-          label.control-label(for="inputPassword") Retype
+          label.control-label(for="pass_retry") Retype
           .controls
-            input(type="password", id="inputPassword", placeholder="Password")
+            input(type="password", name="pass_retry", id="pass_retry", placeholder="Password")
         .form-actions
           button.btn.btn-primary(type="submit") Save changes
-          button.btn(type="button", style="margin-left: 20px;") Cancel
+          button#cancel.btn(type="button") Cancel
