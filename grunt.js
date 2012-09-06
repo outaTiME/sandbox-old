@@ -14,7 +14,7 @@ module.exports = function (grunt) {
     },
     files: {
       sandbox: [
-        'js/jquery-1.8.0.min.js',
+        'js/jquery-1.8.1.min.js',
         'js/bootstrap/bootstrap.min.js',
         'js/jquery.ba-dotimeout.min.js',
         'js/sandbox.js'
@@ -38,6 +38,8 @@ module.exports = function (grunt) {
         'js/logs.js'
       ],
       usig: [
+        'js/jquery-1.8.1.min.js',
+        'js/normalizadorDirecciones.min.js',
         'js/usig.js'
       ]
     },

@@ -462,6 +462,91 @@ app.get('/usig/normalize', [], function (req, res, next) {
 
 app.get('/usig/test', [], function (req, res, next) {
   // geocode
+  jsdom.env({
+    html: "<html><body></body></html>",
+    scripts: [
+      __dirname + '/public/js/usig.js'
+    ]
+  }, function (err, window) {
+    if (err) {
+      console.log(err);
+    }
+
+    var n = window.usig.NormalizadorDirecciones.init();
+
+    setInterval(function () {
+      console.log(n.listo());
+    }, 250);
+
+    // console.log(n.normalizar('callao', 10));
+
+    /*
+
+    var n = window.usig.NormalizadorDirecciones.init({
+      onReady: function () {
+        try {
+          console.log(n.normalizar('callao', 10)[0].codigo);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    });
+
+    */
+
+  });
+
+  /*
+  request(
+    {
+      method: 'GET',
+      uri: 'http://localhost:' + (process.env.PORT || 3001) + '/usig/normalize',
+      qs: {
+        calle: 'Santa Fe'
+      }
+    },
+    function (err, response, body) {
+      if (err) {
+        return next(err);
+      }
+      console.log(body);
+
+*/
+
+      /*
+
+      var doc   = jsdom.jsdom(body, null, {
+        features: {
+          FetchExternalResources   : ['script'],
+          ProcessExternalResources : ['script'],
+          MutationEvents           : '2.0',
+        }
+      });
+
+      var window = doc.createWindow();
+
+      jsdom.jQueryify(window, 'http://code.jquery.com/jquery-1.4.2.min.js', function () {
+        console.log(window.usig.NormalizadorDirecciones);
+      });
+
+      */
+
+      /*
+
+
+
+      html: "<html><body></body></html>",
+        documentRoot: __dirname + '/lib',
+
+      var jsdom  = require("jsdom").jsdom, doc = jsdom(body), window = doc.createWindow();
+      */
+
+      /*
+
+    }
+  );
+
+*/
 
   /*
 
@@ -499,21 +584,7 @@ app.get('/usig/test', [], function (req, res, next) {
   });
   */
 
-  /* var phantom = require('phantom');
-  phantom.create(function(ph) {
-    return ph.createPage(function(page) {
-      return page.open("http://localhost:' + (process.env.PORT || 3001) + '/usig/normalize?", function(status) {
-        console.log("opened google? ", status);
-        return page.evaluate((function() {
-          return document.title;
-        }), function(result) {
-          console.log('Page title is ' + result);
-          return ph.exit();
-        });
-      });
-    });
-  });
-
+  /*
 
   request(
     {
