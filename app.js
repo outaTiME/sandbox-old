@@ -23,8 +23,6 @@ var
   moment = require('moment'),
   pkg = require('package')(this),
   request = require('request'),
-  jsdom = require('jsdom'),
-  cheerio = require('cheerio'),
 
   /** Aapplication name. */
   app_name = "Sandbox",
@@ -315,7 +313,7 @@ app.get('/inout/bounds', [checkAuth], function (req, res, next) {
   var user = getUserEmail(req);
   // find user id
   UserModel
-    .findOne({email: user}, ['bounds'])
+    .findOne({email: user}, 'bounds')
     .exec(function (err, doc) {
     if (err) {
       return next(err);
@@ -412,7 +410,7 @@ app.get('/inout', [checkAuth], function (req, res, next) {
   var user = getUserEmail(req);
   // find user id
   UserModel
-    .findOne({email: user}, ['bounds'])
+    .findOne({email: user}, 'bounds')
     .exec(function (err, doc) {
     if (err) {
       return next(err);
@@ -433,8 +431,8 @@ app.get('/logs', [checkAuth], function (req, res, next) {
   // find user id
   LogModel
     .find({})
-    .populate('_user', ['email'])
-    .sort('created', -1)
+    .populate('_user', 'email')
+    .sort('-created')
     .limit(100)
     .exec(function (err, logs) {
       if (err) {
@@ -458,171 +456,6 @@ app.get('/usig/normalize', [], function (req, res, next) {
   res.render('usig', {
     street: req.query.calle
   });
-});
-
-app.get('/usig/test', [], function (req, res, next) {
-  // geocode
-  jsdom.env({
-    html: "<html><body></body></html>",
-    scripts: [
-      __dirname + '/public/js/usig.js'
-    ]
-  }, function (err, window) {
-    if (err) {
-      console.log(err);
-    }
-
-    var n = window.usig.NormalizadorDirecciones.init();
-
-    setInterval(function () {
-      console.log(n.listo());
-    }, 250);
-
-    // console.log(n.normalizar('callao', 10));
-
-    /*
-
-    var n = window.usig.NormalizadorDirecciones.init({
-      onReady: function () {
-        try {
-          console.log(n.normalizar('callao', 10)[0].codigo);
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    });
-
-    */
-
-  });
-
-  /*
-  request(
-    {
-      method: 'GET',
-      uri: 'http://localhost:' + (process.env.PORT || 3001) + '/usig/normalize',
-      qs: {
-        calle: 'Santa Fe'
-      }
-    },
-    function (err, response, body) {
-      if (err) {
-        return next(err);
-      }
-      console.log(body);
-
-*/
-
-      /*
-
-      var doc   = jsdom.jsdom(body, null, {
-        features: {
-          FetchExternalResources   : ['script'],
-          ProcessExternalResources : ['script'],
-          MutationEvents           : '2.0',
-        }
-      });
-
-      var window = doc.createWindow();
-
-      jsdom.jQueryify(window, 'http://code.jquery.com/jquery-1.4.2.min.js', function () {
-        console.log(window.usig.NormalizadorDirecciones);
-      });
-
-      */
-
-      /*
-
-
-
-      html: "<html><body></body></html>",
-        documentRoot: __dirname + '/lib',
-
-      var jsdom  = require("jsdom").jsdom, doc = jsdom(body), window = doc.createWindow();
-      */
-
-      /*
-
-    }
-  );
-
-*/
-
-  /*
-
-  var window = jsdom.jsdom().createWindow();
-
-  jsdom.env("http://sandbox.outa.im/", [
-    'http://code.jquery.com/jquery-1.4.2.min.js'
-  ],
-  function(errors, window) {
-    console.log(window.jQuery);
-  });
-
-  */
-  /*
-
-  jsdom.env('http://sandbox.outa.im/', [
-    'http://code.jquery.com/jquery-1.4.2.min.js',
-    'http://servicios.usig.buenosaires.gob.ar/nd-js/1.1/normalizadorDirecciones.min.js'
-  ],
-  function (errors, window) {
-    window.$(function () {
-      console.log('onReady #1');
-      var n = window.usig.NormalizadorDirecciones.init({
-        onReady: function () {
-          console.log('onReady #2');
-          try {
-            res.json(n.normalizar(req.query.calle, 10)[0].codigo);
-          } catch (error) {
-            // error
-            res.send(500);
-          }
-        }
-      });
-    });
-  });
-  */
-
-  /*
-
-  request(
-    {
-      method: 'GET',
-      uri: 'http://localhost:' + (process.env.PORT || 3001) + '/usig/normalize',
-      qs: {
-        calle: 'Santa Fe'
-      }
-    },
-    function (err, response, body) {
-      if (err) {
-        return next(err);
-      }
-      console.log(body);
-
-
-
-
-
-
-
-
-      var $ = cheerio.load(body)
-
-
-      var window = jsdom.jsdom(body).createWindow();
-      jsdom.jQueryify(window, 'http://code.jquery.com/jquery-1.4.2.min.js', function () {
-        var $ = window.$;
-        $('#normalized').bind('done', function () {
-          console.log('done event');
-          console.log($(this).text());
-        });
-      });
-    }
-  );
-
-  */
-
 });
 
 /** Return geocode from qs, using: http://ws.usig.buenosaires.gob.ar/geocoder/2.2. **/
