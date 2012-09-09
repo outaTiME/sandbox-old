@@ -28,7 +28,7 @@ append box
         a.dropdown-toggle(href="#", data-toggle="dropdown") User
           b.caret
         ul.dropdown-menu
-          li
+          li(class="#{(request.user.email === demo_user) ? 'disabled' : ''}")
             a#profile(href="#") Profile
           li.disabled
             a(href="#") Account Settings
