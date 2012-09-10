@@ -36,9 +36,19 @@ var
   /** Default password field value. **/
   password_value = "demo",
 
+  /** Check running environment. **/
+  isProduction = function () {
+    return process.env.NODE_ENV === "production";
+  },
+
+  /** Check running environment. **/
+  isDebug = function () {
+    return !isProduction();
+  },
+
   /** Get value only if running app in development mode, if not return empty (used by helpers). **/
   getEnvironmentValue = function (value, empty) {
-    if (app.settings.env === "development") {
+    if (isDebug()) {
       return value;
     }
     return empty || "";
@@ -54,11 +64,6 @@ var
       res.redirect("/login");
     }
     // next();
-  },
-
-  /** Check running environment. **/
-  isProduction = function () {
-    return process.env.NODE_ENV === "production";
   },
 
   /** Check if app running in development mode, only for especial methods. */
@@ -265,7 +270,8 @@ app.helpers({
     return moment(date).unix();
   },
   year: moment().year(),
-  debug: app.settings.env === "development",
+  debug: isDebug(),
+  production: isProduction(),
   version: pkg.version,
   demo_user: login_value,
   demo_password: password_value
@@ -352,7 +358,7 @@ app.post('/inout/bounds', [checkAuth], function (req, res, next) {
 app.post('/profile', [checkAuth], function (req, res, next) {
   // get user
   var user = getUserEmail(req);
-  if (user !== login_value) {
+  if (user !== login_value || isDebug()) {
     console.info("Saving profile for: %s. %j", user, req.body);
     // find user id
     UserModel
