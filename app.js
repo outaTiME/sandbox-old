@@ -516,6 +516,35 @@ app.get('/usig/geocode', [], function (req, res, next) {
   );
 });
 
+/** Return geocode from google, using: https://developers.google.com/maps/documentation/geocoding/. **/
+app.get('/google/geocode', [], function (req, res, next) {
+  var keywords = req.query.keywords;
+  request(
+    {
+      method: 'GET',
+      uri: 'http://maps.googleapis.com/maps/api/geocode/json',
+      qs: req.query,
+      json: true
+    },
+    function (err, response, body) {
+      if (err) {
+        return next(err);
+      }
+      // trace
+      _log(
+        req.user,
+        'google',
+        'GET',
+        'geocode',
+        req.query,
+        body
+      );
+      // result
+      res.json(body);
+    }
+  );
+});
+
 /** services only at dev mode **/
 
 app.get('/fixtures/create', [checkDevelopmentMode], function (req, res, next) {
