@@ -522,7 +522,7 @@ app.get('/google/geocode', [], function (req, res, next) {
   request(
     {
       method: 'GET',
-      uri: 'http://maps.googleapis.com/maps/api/geocode/json',
+      uri: 'http://maps.googleapis.com/maps/api/geocode/json?sensor=false',
       qs: req.query,
       json: true
     },

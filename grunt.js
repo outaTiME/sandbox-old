@@ -147,11 +147,13 @@ module.exports = function (grunt) {
     },
     replace: {
       dist: {
-        src: ['build/manifest.appcache', 'build/humans.txt'],
-        dest: 'public',
-        variables: {
-          // version: '<%= pkg.version %>',
-          timestamp: '<%= grunt.template.today() %>'
+        options: {
+          variables: {
+            timestamp: '<%= grunt.template.today() %>'
+          }
+        },
+        files: {
+          'public/': ['build/manifest.appcache', 'build/humans.txt']
         }
       }
     },
