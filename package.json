@@ -14,24 +14,24 @@
   },
   "main": "app",
   "dependencies": {
-    "express": "2.x",
-    "jade": "0.x",
+    "express": "^4.14.0",
+    "jade": "^1.11.0",
     "gzippo": "0.x",
-    "mongoose": "3.x",
+    "mongoose": "^4.6.8",
     "mongoose-troop": "0.x",
     "mongoose-types": "1.x",
-    "moment": "1.x",
+    "moment": "^2.16.0",
     "package": "1.x",
     "bcrypt": "0.x",
     "everyauth": "0.x",
     "request": "2.x"
   },
   "devDependencies": {
-    "grunt": "0.3.x",
-    "grunt-recess": "0.x",
+    "grunt": "~1.0.1",
+    "grunt-recess": "^1.0.1",
     "grunt-contrib": "0.x",
     "grunt-growl": "0.x",
-    "grunt-replace": "0.x"
+    "grunt-replace": "^1.0.1"
   },
   "engines": {
     "node": "0.6.x"
